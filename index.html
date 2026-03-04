@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UIL Spelling & Vocabulary Practice</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div class="logo">
+        <span class="logo-icon">UIL</span>
+        <div>
+          <h1>Spelling & Vocabulary</h1>
+          <p class="subtitle">2025-2026 Word Power Practice</p>
+        </div>
+      </div>
+      <div class="progress-badge" id="progressBadge">
+        <span id="progressCount">0</span> / <span id="totalWords">0</span> studied
+      </div>
+    </div>
+    <nav>
+      <button class="nav-btn active" data-tab="explore">Word Explorer</button>
+      <button class="nav-btn" data-tab="study">Study Cards</button>
+      <button class="nav-btn" data-tab="practice">Spelling Practice</button>
+      <button class="nav-btn" data-tab="quiz">Quiz Mode</button>
+      <button class="nav-btn" data-tab="reference">Prefix/Suffix Guide</button>
+      <button class="nav-btn" data-tab="audio">Audio Tests</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- WORD EXPLORER TAB -->
+    <section id="tab-explore" class="tab-content active">
+      <div class="controls-bar">
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="Search words..." autocomplete="off">
+          <span class="search-icon">&#128269;</span>
+        </div>
+        <div class="filter-group">
+          <select id="letterFilter">
+            <option value="">All Letters</option>
+          </select>
+          <select id="vocabFilter">
+            <option value="">All Words</option>
+            <option value="vocab">Vocabulary Words Only</option>
+            <option value="regular">Regular Words Only</option>
+          </select>
+          <select id="statusFilter">
+            <option value="">Any Status</option>
+            <option value="unstudied">Not Yet Studied</option>
+            <option value="studied">Studied</option>
+            <option value="mastered">Mastered</option>
+          </select>
+        </div>
+      </div>
+      <div class="word-count" id="wordCount"></div>
+      <div class="word-grid" id="wordGrid"></div>
+
+      <!-- Word Detail Modal -->
+      <div class="modal-overlay" id="wordModal">
+        <div class="modal">
+          <button class="modal-close" id="modalClose">&times;</button>
+          <div class="modal-word" id="modalWord"></div>
+          <div class="modal-alt" id="modalAlt"></div>
+          <span class="vocab-badge hidden" id="modalVocab">Vocabulary Word</span>
+          <div class="modal-section">
+            <h3>Definition</h3>
+            <p id="modalDef">Loading definition...</p>
+          </div>
+          <div class="modal-section">
+            <h3>Word Analysis</h3>
+            <div id="modalAnalysis"></div>
+          </div>
+          <div class="modal-section">
+            <h3>Spelling Tips</h3>
+            <div id="modalTips"></div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-outline" id="modalMarkStudied">Mark as Studied</button>
+            <button class="btn btn-primary" id="modalMarkMastered">Mark as Mastered</button>
+            <button class="btn btn-speak" id="modalSpeak">&#128266; Pronounce</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STUDY CARDS TAB -->
+    <section id="tab-study" class="tab-content">
+      <div class="study-controls">
+        <select id="studyFilter">
+          <option value="all">All Words</option>
+          <option value="vocab">Vocabulary Words</option>
+          <option value="unstudied">Not Yet Studied</option>
+          <option value="difficult">Difficult Words (6+ letters)</option>
+        </select>
+        <button class="btn btn-outline" id="shuffleCards">Shuffle</button>
+        <span class="card-counter"><span id="cardIndex">0</span> / <span id="cardTotal">0</span></span>
+      </div>
+      <div class="flashcard-container">
+        <div class="flashcard" id="flashcard">
+          <div class="flashcard-front">
+            <div class="flashcard-word" id="flashcardWord"></div>
+            <p class="flashcard-hint">Click to reveal details</p>
+          </div>
+          <div class="flashcard-back">
+            <div class="flashcard-word" id="flashcardWordBack"></div>
+            <div class="flashcard-details" id="flashcardDetails"></div>
+            <p class="flashcard-hint">Click to flip back</p>
+          </div>
+        </div>
+      </div>
+      <div class="card-nav">
+        <button class="btn btn-outline" id="prevCard">&#9664; Previous</button>
+        <button class="btn btn-outline" id="markStudiedCard">Mark Studied</button>
+        <button class="btn btn-primary" id="nextCard">Next &#9654;</button>
+      </div>
+    </section>
+
+    <!-- SPELLING PRACTICE TAB -->
+    <section id="tab-practice" class="tab-content">
+      <div class="practice-setup" id="practiceSetup">
+        <h2>Spelling Practice</h2>
+        <p>Listen to the definition and type the correct spelling. Practice makes perfect!</p>
+        <div class="practice-options">
+          <label>Number of words:
+            <select id="practiceCount">
+              <option value="10">10 words</option>
+              <option value="20" selected>20 words</option>
+              <option value="30">30 words</option>
+              <option value="50">50 words</option>
+              <option value="70">70 words (Full Test)</option>
+            </select>
+          </label>
+          <label>Word source:
+            <select id="practiceSource">
+              <option value="all">All Words</option>
+              <option value="vocab">Vocabulary Words</option>
+              <option value="unstudied">Not Yet Studied</option>
+              <option value="meet1">Meet #1 Words</option>
+            </select>
+          </label>
+        </div>
+        <button class="btn btn-primary btn-large" id="startPractice">Start Practice</button>
+      </div>
+      <div class="practice-active hidden" id="practiceActive">
+        <div class="practice-header">
+          <div class="practice-progress">
+            <span>Word <span id="practiceNum">1</span> of <span id="practiceTotal">20</span></span>
+            <div class="progress-bar">
+              <div class="progress-fill" id="practiceProgressBar"></div>
+            </div>
+          </div>
+          <div class="practice-score">Score: <span id="practiceScore">0</span></div>
+        </div>
+        <div class="practice-card">
+          <div class="practice-def" id="practiceDef"></div>
+          <button class="btn btn-speak" id="practiceSpeak">&#128266; Hear Word</button>
+          <div class="practice-input-area">
+            <input type="text" id="practiceInput" placeholder="Type the word here..." autocomplete="off" autocapitalize="off" spellcheck="false">
+            <button class="btn btn-primary" id="practiceSubmit">Check</button>
+          </div>
+          <div class="practice-feedback hidden" id="practiceFeedback"></div>
+          <button class="btn btn-primary hidden" id="practiceNext">Next Word</button>
+        </div>
+      </div>
+      <div class="practice-results hidden" id="practiceResults">
+        <h2>Practice Complete!</h2>
+        <div class="results-score" id="resultsScore"></div>
+        <div class="results-list" id="resultsList"></div>
+        <button class="btn btn-primary btn-large" id="restartPractice">Practice Again</button>
+      </div>
+    </section>
+
+    <!-- QUIZ MODE TAB -->
+    <section id="tab-quiz" class="tab-content">
+      <div class="quiz-setup" id="quizSetup">
+        <h2>Quiz Mode</h2>
+        <p>Simulate a real UIL Spelling test environment with timed questions.</p>
+        <div class="quiz-types">
+          <div class="quiz-type-card" data-quiz="proofreading">
+            <h3>Part I: Proofreading</h3>
+            <p>Find the misspelled word from a group and correct it.</p>
+          </div>
+          <div class="quiz-type-card" data-quiz="spelling">
+            <h3>Part II: Spelling</h3>
+            <p>Write the correct spelling from a definition.</p>
+          </div>
+          <div class="quiz-type-card" data-quiz="vocabulary">
+            <h3>Vocabulary</h3>
+            <p>Match words with their correct definitions.</p>
+          </div>
+        </div>
+      </div>
+      <div class="quiz-active hidden" id="quizActive">
+        <div class="quiz-header">
+          <span>Question <span id="quizNum">1</span> / <span id="quizTotal">15</span></span>
+          <span class="quiz-timer" id="quizTimer">15:00</span>
+          <span>Score: <span id="quizScore">0</span></span>
+        </div>
+        <div class="quiz-question" id="quizQuestion"></div>
+        <div class="quiz-options" id="quizOptions"></div>
+        <div class="quiz-input hidden" id="quizInput">
+          <input type="text" id="quizAnswer" placeholder="Type your answer..." autocomplete="off" spellcheck="false">
+          <button class="btn btn-primary" id="quizSubmitAnswer">Submit</button>
+        </div>
+        <div class="quiz-feedback hidden" id="quizFeedback"></div>
+        <button class="btn btn-primary hidden" id="quizNext">Next Question</button>
+      </div>
+      <div class="quiz-results hidden" id="quizResults">
+        <h2>Quiz Complete!</h2>
+        <div class="results-score" id="quizResultsScore"></div>
+        <div class="results-list" id="quizResultsList"></div>
+        <button class="btn btn-primary btn-large" id="restartQuiz">Try Again</button>
+      </div>
+    </section>
+
+    <!-- PREFIX/SUFFIX REFERENCE TAB -->
+    <section id="tab-reference" class="tab-content">
+      <h2>Prefix & Suffix Reference Guide</h2>
+      <p class="ref-intro">Understanding prefixes and suffixes helps you decode unfamiliar words and spell them correctly.</p>
+      <div class="ref-tabs">
+        <button class="ref-tab-btn active" data-reftab="prefixes">Prefixes</button>
+        <button class="ref-tab-btn" data-reftab="suffixes">Suffixes</button>
+        <button class="ref-tab-btn" data-reftab="roots">Spelling Rules</button>
+      </div>
+      <div class="ref-search">
+        <input type="text" id="refSearch" placeholder="Search prefixes/suffixes...">
+      </div>
+      <div id="ref-prefixes" class="ref-content active"></div>
+      <div id="ref-suffixes" class="ref-content"></div>
+      <div id="ref-roots" class="ref-content">
+        <div class="rule-card">
+          <h3>I Before E Rule</h3>
+          <p><strong>I before E, except after C</strong>, or when sounded like A as in "neighbor" and "weigh".</p>
+          <p class="rule-examples">Examples: <em>receive, conceive, perceive</em> (after C) | <em>believe, achieve, field</em> (i before e)</p>
+          <p class="rule-exceptions">Exceptions: <em>weird, seize, leisure, neither, protein, caffeine</em></p>
+        </div>
+        <div class="rule-card">
+          <h3>Doubling Consonants</h3>
+          <p>When adding a suffix starting with a vowel to a word ending in a single consonant preceded by a single vowel, double the consonant if the word is <strong>one syllable</strong> or the <strong>stress is on the last syllable</strong>.</p>
+          <p class="rule-examples">Examples: <em>run &rarr; running, begin &rarr; beginning, stop &rarr; stopped</em></p>
+          <p class="rule-exceptions">Do NOT double: <em>visit &rarr; visiting</em> (stress on first syllable)</p>
+        </div>
+        <div class="rule-card">
+          <h3>Silent E Rule</h3>
+          <p>Drop the silent E when adding a suffix that begins with a vowel. Keep it when the suffix begins with a consonant.</p>
+          <p class="rule-examples">Drop: <em>make &rarr; making, drive &rarr; driving</em></p>
+          <p class="rule-examples">Keep: <em>care &rarr; careful, hope &rarr; hopeful</em></p>
+          <p class="rule-exceptions">Exceptions: <em>noticeable, courageous</em> (keep E after C or G before -able/-ous)</p>
+        </div>
+        <div class="rule-card">
+          <h3>Y to I Rule</h3>
+          <p>When a word ends in a consonant + Y, change Y to I before adding a suffix (unless the suffix starts with I).</p>
+          <p class="rule-examples">Examples: <em>happy &rarr; happiness, carry &rarr; carried, beauty &rarr; beautiful</em></p>
+          <p class="rule-exceptions">Keep Y before -ing: <em>carry &rarr; carrying, study &rarr; studying</em></p>
+        </div>
+        <div class="rule-card">
+          <h3>-CEDE, -CEED, -SEDE</h3>
+          <p>Only one word ends in <strong>-sede</strong>: supersede. Only three words end in <strong>-ceed</strong>: exceed, proceed, succeed. All others end in <strong>-cede</strong>.</p>
+          <p class="rule-examples">Examples: <em>precede, concede, recede, intercede, accede</em></p>
+        </div>
+        <div class="rule-card">
+          <h3>-ABLE vs -IBLE</h3>
+          <p>Use <strong>-able</strong> if you can add it to a complete word. Use <strong>-ible</strong> if removing the suffix doesn't leave a complete word.</p>
+          <p class="rule-examples">-able: <em>comfortable, reasonable, dependable</em></p>
+          <p class="rule-examples">-ible: <em>terrible, visible, possible</em></p>
+        </div>
+        <div class="rule-card">
+          <h3>Foreign Word Markings</h3>
+          <p>UIL Spelling includes words from foreign languages. Accent marks must be used correctly:</p>
+          <p class="rule-examples"><strong>Acute accent (&#x00E9;)</strong>: pronounced as long "a" - <em>d&eacute;gag&eacute;, &eacute;migr&eacute;</em></p>
+          <p class="rule-examples"><strong>Grave accent (&#x00E8;)</strong>: "eh" sound - <em>cr&egrave;me</em></p>
+          <p class="rule-examples"><strong>Circumflex (&#x00EA;)</strong>: "eh" or "oh" - <em>cr&ecirc;pe</em></p>
+          <p class="rule-examples"><strong>Cedilla (&#x00E7;)</strong>: "s" sound - <em>fa&ccedil;ade, gar&ccedil;on</em></p>
+          <p class="rule-examples"><strong>Umlaut (&#x00FC;)</strong>: modified vowel - <em>na&iuml;ve</em></p>
+          <p class="rule-exceptions">Note: Improper use of accent marks or omitting them is considered a spelling error in UIL competition.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- AUDIO TESTS TAB -->
+    <section id="tab-audio" class="tab-content">
+      <h2>Practice Test Audio</h2>
+      <p>Listen to the pronouncer and practice writing words just like in a real UIL meet.</p>
+      <div class="audio-cards">
+        <div class="audio-card">
+          <h3>Virtual Challenge Meet #1</h3>
+          <div class="audio-track">
+            <span>Words 1-40</span>
+            <audio controls src="audio/meet1-words-1-40.mp3"></audio>
+          </div>
+          <div class="audio-track">
+            <span>Words 41-70</span>
+            <audio controls src="audio/meet1-words-41-70.mp3"></audio>
+          </div>
+          <div class="audio-track">
+            <span>Tiebreaker 1-20</span>
+            <audio controls src="audio/meet1-tiebreaker-1-20.mp3"></audio>
+          </div>
+        </div>
+        <div class="audio-card">
+          <h3>Virtual Challenge Meet #2</h3>
+          <div class="audio-track">
+            <span>Words 1-40</span>
+            <audio controls src="audio/meet2-words-1-40.mp3"></audio>
+          </div>
+          <div class="audio-track">
+            <span>Words 41-70</span>
+            <audio controls src="audio/meet2-words-41-70.mp3"></audio>
+          </div>
+          <div class="audio-track">
+            <span>Tiebreaker 1-20</span>
+            <audio controls src="audio/meet2-tiebreaker-1-20.mp3"></audio>
+          </div>
+        </div>
+        <div class="audio-card">
+          <h3>Virtual Challenge Meet #3</h3>
+          <div class="audio-track">
+            <span>Words 1-40</span>
+            <audio controls src="audio/meet3-words-1-40.mp3"></audio>
+          </div>
+          <div class="audio-track">
+            <span>Words 41-70</span>
+            <audio controls src="audio/meet3-words-41-70.mp3"></audio>
+          </div>
+          <div class="audio-track">
+            <span>Tiebreaker 1-20</span>
+            <audio controls src="audio/meet3-tiebreaker-1-20.mp3"></audio>
+          </div>
+        </div>
+        <div class="audio-card">
+          <h3>Virtual Challenge Meet #4</h3>
+          <div class="audio-track">
+            <span>Words 1-40</span>
+            <audio controls src="audio/meet4-words-1-40.mp3"></audio>
+          </div>
+          <div class="audio-track">
+            <span>Words 41-70</span>
+            <audio controls src="audio/meet4-words-41-70.mp3"></audio>
+          </div>
+          <div class="audio-track">
+            <span>Tiebreaker 1-20</span>
+            <audio controls src="audio/meet4-tiebreaker-1-20.mp3"></audio>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>UIL Spelling & Vocabulary Practice Tool | Word Power 2025-2026</p>
+  </footer>
+
+  <script src="js/words.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
