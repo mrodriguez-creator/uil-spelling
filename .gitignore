@@ -5,3 +5,7 @@ tests/
 
 # Original zip/source files
 Spelling Test/
+
+# Build scripts
+generate_audio.py
+.claude/

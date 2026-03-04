@@ -19,7 +19,9 @@
     quizScore: 0,
     quizTimer: null,
     quizTimeLeft: 900,
-    definitionCache: JSON.parse(localStorage.getItem('uil-defs') || '{}')
+    definitionCache: JSON.parse(localStorage.getItem('uil-defs') || '{}'),
+    audioManifest: null,
+    currentAudio: null
   };
 
   // ==================== INIT ====================
@@ -33,6 +35,12 @@
       number: i + 1
     }));
     state.filteredWords = [...state.words];
+
+    // Load audio manifest
+    fetch('audio/manifest.json')
+      .then(r => r.json())
+      .then(data => { state.audioManifest = data; })
+      .catch(() => { state.audioManifest = null; });
 
     setupTabs();
     setupExplorer();
@@ -380,6 +388,11 @@
         const w = state.studyDeck[state.currentCard];
         setStatus(w.word, 'studied');
         document.getElementById('markStudiedCard').textContent = 'Studied ✓';
+      }
+    });
+    document.getElementById('speakCard').addEventListener('click', () => {
+      if (state.studyDeck.length > 0) {
+        speak(state.studyDeck[state.currentCard].word);
       }
     });
 
@@ -915,6 +928,29 @@
 
   // ==================== UTILITIES ====================
   function speak(text) {
+    // Stop any currently playing audio
+    if (state.currentAudio) {
+      state.currentAudio.pause();
+      state.currentAudio = null;
+    }
+
+    // Try to use pre-generated audio file first
+    if (state.audioManifest && state.audioManifest[text]) {
+      const audio = new Audio('audio/words/' + state.audioManifest[text]);
+      audio.playbackRate = 1.0;
+      state.currentAudio = audio;
+      audio.play().catch(() => {
+        // Fallback to browser TTS if audio file fails
+        speakTTS(text);
+      });
+      return;
+    }
+
+    // Fallback to browser text-to-speech
+    speakTTS(text);
+  }
+
+  function speakTTS(text) {
     if ('speechSynthesis' in window) {
       const u = new SpeechSynthesisUtterance(text);
       u.rate = 0.8;
