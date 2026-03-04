@@ -446,6 +446,21 @@
     // Build back details
     const analysis = analyzeWord(w.word);
     const def = findDefinition(w);
+
+    buildCardDetails(w, def, analysis);
+
+    // If no definition found locally, fetch from API and update the card
+    if (!def) {
+      fetchDefinition(w.word).then(fetchedDef => {
+        // Only update if we're still on the same card
+        if (state.studyDeck.length > 0 && state.studyDeck[state.currentCard] === w && fetchedDef) {
+          buildCardDetails(w, fetchedDef, analysis);
+        }
+      });
+    }
+  }
+
+  function buildCardDetails(w, def, analysis) {
     let details = '';
 
     if (w.alt) {
@@ -456,6 +471,8 @@
     }
     if (def) {
       details += `<div class="detail-row"><div class="detail-label">Definition</div>${escapeHtml(def)}</div>`;
+    } else {
+      details += `<div class="detail-row"><div class="detail-label">Definition</div><em style="color:var(--text-light)">Loading...</em></div>`;
     }
     if (analysis.prefixes.length > 0 || analysis.suffixes.length > 0) {
       let parts = '';
