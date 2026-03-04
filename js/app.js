@@ -962,7 +962,7 @@
     document.getElementById('reviewMissedWords').addEventListener('click', reviewMissedAudioWords);
   }
 
-  async function startAudioTest() {
+  function startAudioTest() {
     const count = state.audioTest.wordCount;
     const source = document.getElementById('audioTestSource').value;
 
@@ -996,23 +996,22 @@
     shuffleArray(pool);
     const selected = pool.slice(0, Math.min(count, pool.length));
 
-    // Pre-fetch definitions for all selected words
-    const wordsWithDefs = await Promise.all(selected.map(async (w) => {
-      let def = w.def || findDefinition(w);
-      if (!def) {
-        def = await fetchDefinition(w.word);
-      }
-      return { ...w, def: def || 'Spell the word as pronounced.' };
-    }));
+    // Attach any already-known definitions but do NOT fetch from API yet
+    // Definitions will be fetched on-the-fly for each word during its audio sequence
+    const wordsReady = selected.map(w => {
+      const def = w.def || findDefinition(w) || null;
+      return { ...w, def: def };
+    });
 
-    state.audioTest.words = wordsWithDefs;
+    state.audioTest.words = wordsReady;
     state.audioTest.index = 0;
     state.audioTest.score = 0;
     state.audioTest.results = [];
 
+    // Show the test screen immediately
     document.getElementById('audioTestSetup').classList.add('hidden');
     document.getElementById('audioTestActive').classList.remove('hidden');
-    document.getElementById('audioTestTotal').textContent = wordsWithDefs.length;
+    document.getElementById('audioTestTotal').textContent = wordsReady.length;
     document.getElementById('audioTestScore').textContent = '0';
 
     playAudioTestWord();
@@ -1050,6 +1049,12 @@
   async function runAudioSequence(wordObj, sequenceId) {
     const statusEl = document.getElementById('audioTestStatus');
 
+    // Start fetching definition in the background while word is pronounced
+    let defPromise = null;
+    if (!wordObj.def) {
+      defPromise = fetchDefinition(wordObj.word);
+    }
+
     // Step 1: Say the word (first time)
     statusEl.innerHTML = '<div class="audio-pulse"></div><span>Pronouncing word...</span>';
     await playWordAudio(wordObj.word);
@@ -1063,6 +1068,17 @@
     statusEl.innerHTML = '<div class="audio-pulse"></div><span>Pronouncing word again...</span>';
     await playWordAudio(wordObj.word);
     if (state.audioTest.currentSequence !== sequenceId) return;
+
+    // Resolve the definition before reading it aloud
+    if (defPromise) {
+      const fetchedDef = await defPromise;
+      wordObj.def = fetchedDef || 'Spell the word as pronounced.';
+      // Update it in the state array too
+      state.audioTest.words[state.audioTest.index] = wordObj;
+    }
+    if (!wordObj.def) {
+      wordObj.def = 'Spell the word as pronounced.';
+    }
 
     // Brief pause
     await delay(800);
