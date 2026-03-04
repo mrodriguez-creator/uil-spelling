@@ -21,7 +21,17 @@
     quizTimeLeft: 900,
     definitionCache: JSON.parse(localStorage.getItem('uil-defs') || '{}'),
     audioManifest: null,
-    currentAudio: null
+    currentAudio: null,
+    // Audio Test state
+    audioTest: {
+      words: [],
+      index: 0,
+      score: 0,
+      results: [],
+      wordCount: 35,
+      isPlaying: false,
+      currentSequence: null  // tracks the current audio playback sequence
+    }
   };
 
   // ==================== INIT ====================
@@ -48,6 +58,7 @@
     setupPractice();
     setupQuiz();
     setupReference();
+    setupAudioTest();
     updateProgress();
   }
 
@@ -924,6 +935,336 @@
         item.style.display = text.includes(q) ? '' : 'none';
       });
     });
+  }
+
+  // ==================== AUDIO TEST ====================
+  function setupAudioTest() {
+    // Word count buttons
+    document.querySelectorAll('.word-count-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.word-count-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.audioTest.wordCount = parseInt(btn.dataset.count);
+      });
+    });
+
+    document.getElementById('startAudioTest').addEventListener('click', startAudioTest);
+    document.getElementById('audioTestSubmit').addEventListener('click', submitAudioTestAnswer);
+    document.getElementById('audioTestInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') submitAudioTestAnswer();
+    });
+    document.getElementById('audioTestNext').addEventListener('click', nextAudioTestWord);
+    document.getElementById('audioTestReplay').addEventListener('click', replayAudioTestWord);
+    document.getElementById('restartAudioTest').addEventListener('click', () => {
+      document.getElementById('audioTestResults').classList.add('hidden');
+      document.getElementById('audioTestSetup').classList.remove('hidden');
+    });
+    document.getElementById('reviewMissedWords').addEventListener('click', reviewMissedAudioWords);
+  }
+
+  async function startAudioTest() {
+    const count = state.audioTest.wordCount;
+    const source = document.getElementById('audioTestSource').value;
+
+    let pool;
+    switch (source) {
+      case 'vocab':
+        pool = state.words.filter(w => w.vocab);
+        break;
+      case 'unstudied':
+        pool = state.words.filter(w => !getStatus(w.word));
+        break;
+      case 'meet1':
+        pool = PRACTICE_TESTS.meet1.words.map((w, i) => ({
+          id: 2000 + i,
+          word: w.word,
+          alt: w.alt || null,
+          vocab: false,
+          number: i + 1,
+          def: w.def
+        }));
+        break;
+      default:
+        pool = [...state.words];
+    }
+
+    if (pool.length === 0) {
+      alert('No words match your filter. Try a different source.');
+      return;
+    }
+
+    shuffleArray(pool);
+    const selected = pool.slice(0, Math.min(count, pool.length));
+
+    // Pre-fetch definitions for all selected words
+    const wordsWithDefs = await Promise.all(selected.map(async (w) => {
+      let def = w.def || findDefinition(w);
+      if (!def) {
+        def = await fetchDefinition(w.word);
+      }
+      return { ...w, def: def || 'Spell the word as pronounced.' };
+    }));
+
+    state.audioTest.words = wordsWithDefs;
+    state.audioTest.index = 0;
+    state.audioTest.score = 0;
+    state.audioTest.results = [];
+
+    document.getElementById('audioTestSetup').classList.add('hidden');
+    document.getElementById('audioTestActive').classList.remove('hidden');
+    document.getElementById('audioTestTotal').textContent = wordsWithDefs.length;
+    document.getElementById('audioTestScore').textContent = '0';
+
+    playAudioTestWord();
+  }
+
+  function playAudioTestWord() {
+    const w = state.audioTest.words[state.audioTest.index];
+    const statusEl = document.getElementById('audioTestStatus');
+    const inputEl = document.getElementById('audioTestInput');
+    const submitEl = document.getElementById('audioTestSubmit');
+
+    // Update progress
+    document.getElementById('audioTestNum').textContent = state.audioTest.index + 1;
+    document.getElementById('audioTestProgressBar').style.width =
+      ((state.audioTest.index) / state.audioTest.words.length * 100) + '%';
+
+    // Reset UI
+    inputEl.value = '';
+    inputEl.disabled = true;
+    submitEl.disabled = true;
+    document.getElementById('audioTestFeedback').classList.add('hidden');
+    document.getElementById('audioTestNext').classList.add('hidden');
+    document.getElementById('audioTestSubmit').classList.remove('hidden');
+
+    state.audioTest.isPlaying = true;
+
+    // Create a sequence ID to allow cancellation
+    const sequenceId = Date.now();
+    state.audioTest.currentSequence = sequenceId;
+
+    // Play sequence: word, word, definition, word
+    runAudioSequence(w, sequenceId);
+  }
+
+  async function runAudioSequence(wordObj, sequenceId) {
+    const statusEl = document.getElementById('audioTestStatus');
+
+    // Step 1: Say the word (first time)
+    statusEl.innerHTML = '<div class="audio-pulse"></div><span>Pronouncing word...</span>';
+    await playWordAudio(wordObj.word);
+    if (state.audioTest.currentSequence !== sequenceId) return;
+
+    // Brief pause
+    await delay(600);
+    if (state.audioTest.currentSequence !== sequenceId) return;
+
+    // Step 2: Say the word (second time)
+    statusEl.innerHTML = '<div class="audio-pulse"></div><span>Pronouncing word again...</span>';
+    await playWordAudio(wordObj.word);
+    if (state.audioTest.currentSequence !== sequenceId) return;
+
+    // Brief pause
+    await delay(800);
+    if (state.audioTest.currentSequence !== sequenceId) return;
+
+    // Step 3: Read the definition
+    statusEl.innerHTML = '<div class="audio-pulse pulse-green"></div><span>Reading definition...</span>';
+    await speakTTSAsync(wordObj.def);
+    if (state.audioTest.currentSequence !== sequenceId) return;
+
+    // Brief pause
+    await delay(800);
+    if (state.audioTest.currentSequence !== sequenceId) return;
+
+    // Step 4: Say the word one more time
+    statusEl.innerHTML = '<div class="audio-pulse"></div><span>Pronouncing word one last time...</span>';
+    await playWordAudio(wordObj.word);
+    if (state.audioTest.currentSequence !== sequenceId) return;
+
+    // Done - enable input
+    state.audioTest.isPlaying = false;
+    statusEl.innerHTML = '<span class="audio-ready">&#9998; Type your answer below</span>';
+    document.getElementById('audioTestInput').disabled = false;
+    document.getElementById('audioTestSubmit').disabled = false;
+    document.getElementById('audioTestInput').focus();
+  }
+
+  function playWordAudio(word) {
+    return new Promise((resolve) => {
+      // Stop any currently playing audio
+      if (state.currentAudio) {
+        state.currentAudio.pause();
+        state.currentAudio = null;
+      }
+
+      if (state.audioManifest && state.audioManifest[word]) {
+        const audio = new Audio('audio/words/' + state.audioManifest[word]);
+        state.currentAudio = audio;
+        audio.onended = () => {
+          state.currentAudio = null;
+          resolve();
+        };
+        audio.onerror = () => {
+          state.currentAudio = null;
+          // Fallback to TTS
+          speakTTSAsync(word).then(resolve);
+        };
+        audio.play().catch(() => {
+          state.currentAudio = null;
+          speakTTSAsync(word).then(resolve);
+        });
+      } else {
+        speakTTSAsync(word).then(resolve);
+      }
+    });
+  }
+
+  function speakTTSAsync(text) {
+    return new Promise((resolve) => {
+      if (!('speechSynthesis' in window)) {
+        resolve();
+        return;
+      }
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.85;
+      u.pitch = 1;
+      u.onend = () => resolve();
+      u.onerror = () => resolve();
+      // Safety timeout in case onend never fires
+      const timeout = setTimeout(() => resolve(), 15000);
+      u.onend = () => { clearTimeout(timeout); resolve(); };
+      u.onerror = () => { clearTimeout(timeout); resolve(); };
+      speechSynthesis.speak(u);
+    });
+  }
+
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  function replayAudioTestWord() {
+    if (state.audioTest.index < state.audioTest.words.length) {
+      const w = state.audioTest.words[state.audioTest.index];
+      const sequenceId = Date.now();
+      state.audioTest.currentSequence = sequenceId;
+      state.audioTest.isPlaying = true;
+
+      // Disable input during replay
+      document.getElementById('audioTestInput').disabled = true;
+      document.getElementById('audioTestSubmit').disabled = true;
+
+      runAudioSequence(w, sequenceId);
+    }
+  }
+
+  function submitAudioTestAnswer() {
+    const w = state.audioTest.words[state.audioTest.index];
+    const answer = document.getElementById('audioTestInput').value.trim();
+    if (!answer) return;
+
+    const correct = isSpellingCorrect(answer, w);
+    const feedback = document.getElementById('audioTestFeedback');
+    feedback.classList.remove('hidden', 'correct', 'incorrect');
+
+    if (correct) {
+      state.audioTest.score++;
+      document.getElementById('audioTestScore').textContent = state.audioTest.score;
+      feedback.classList.add('correct');
+      feedback.textContent = '✓ Correct!';
+      setStatus(w.word, getStatus(w.word) === 'mastered' ? 'mastered' : 'studied');
+    } else {
+      feedback.classList.add('incorrect');
+      feedback.innerHTML = `✗ Incorrect. The correct spelling is: <strong>${escapeHtml(w.word)}</strong>` +
+        (w.alt ? ` (also accepted: ${escapeHtml(w.alt)})` : '');
+    }
+
+    state.audioTest.results.push({
+      word: w.word,
+      def: w.def,
+      answer: answer,
+      correct: correct
+    });
+
+    document.getElementById('audioTestSubmit').classList.add('hidden');
+    document.getElementById('audioTestNext').classList.remove('hidden');
+    document.getElementById('audioTestInput').disabled = true;
+  }
+
+  function nextAudioTestWord() {
+    state.audioTest.index++;
+    if (state.audioTest.index >= state.audioTest.words.length) {
+      showAudioTestResults();
+    } else {
+      playAudioTestWord();
+    }
+  }
+
+  function showAudioTestResults() {
+    // Stop any playing audio
+    if (state.currentAudio) {
+      state.currentAudio.pause();
+      state.currentAudio = null;
+    }
+    speechSynthesis.cancel();
+    state.audioTest.currentSequence = null;
+
+    document.getElementById('audioTestActive').classList.add('hidden');
+    document.getElementById('audioTestResults').classList.remove('hidden');
+
+    const total = state.audioTest.words.length;
+    const score = state.audioTest.score;
+    const pct = Math.round(score / total * 100);
+
+    document.getElementById('audioTestResultsScore').textContent = `${score} / ${total} (${pct}%)`;
+
+    // Letter grade
+    const gradeEl = document.getElementById('audioTestGrade');
+    let grade, gradeClass;
+    if (pct >= 90) { grade = 'A'; gradeClass = 'grade-a'; }
+    else if (pct >= 80) { grade = 'B'; gradeClass = 'grade-b'; }
+    else if (pct >= 70) { grade = 'C'; gradeClass = 'grade-c'; }
+    else if (pct >= 60) { grade = 'D'; gradeClass = 'grade-d'; }
+    else { grade = 'F'; gradeClass = 'grade-f'; }
+    gradeEl.innerHTML = `<span class="grade-letter ${gradeClass}">${grade}</span>`;
+
+    // Show/hide review button
+    const missed = state.audioTest.results.filter(r => !r.correct);
+    document.getElementById('reviewMissedWords').style.display = missed.length > 0 ? '' : 'none';
+
+    // Results list
+    const list = document.getElementById('audioTestResultsList');
+    list.innerHTML = state.audioTest.results.map((r, i) =>
+      `<div class="result-item">
+        <span class="result-num">${i + 1}.</span>
+        <span class="result-icon ${r.correct ? 'result-correct' : 'result-wrong'}">${r.correct ? '✓' : '✗'}</span>
+        <span><strong>${escapeHtml(r.word)}</strong></span>
+        ${!r.correct ? `<span class="result-answer">You typed: ${escapeHtml(r.answer)}</span>` : ''}
+      </div>`
+    ).join('');
+  }
+
+  function reviewMissedAudioWords() {
+    // Switch to Study Cards tab with missed words
+    const missed = state.audioTest.results.filter(r => !r.correct);
+    if (missed.length === 0) return;
+
+    // Build a study deck from missed words
+    state.studyDeck = missed.map(r => {
+      return state.words.find(w => w.word.toLowerCase() === r.word.toLowerCase()) || {
+        id: -1, word: r.word, alt: null, vocab: false, number: 0
+      };
+    });
+    state.currentCard = 0;
+
+    // Switch to study tab
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelector('[data-tab="study"]').classList.add('active');
+    document.getElementById('tab-study').classList.add('active');
+
+    showCard();
   }
 
   // ==================== UTILITIES ====================

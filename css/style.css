@@ -680,35 +680,258 @@ main {
 .rule-examples em { color: var(--primary); font-style: normal; font-weight: 600; }
 .rule-exceptions { color: var(--accent); font-size: 13px; }
 
-/* Audio */
+/* Audio Test Setup */
+.audio-test-setup { text-align: center; padding: 40px 20px; }
+.audio-test-setup h2 { font-size: 28px; margin-bottom: 8px; }
+.audio-test-setup > p { color: var(--text-light); margin-bottom: 28px; max-width: 600px; margin-left: auto; margin-right: auto; }
+.audio-test-options {
+  max-width: 500px;
+  margin: 0 auto 28px;
+  text-align: left;
+}
+.audio-option-group {
+  margin-bottom: 20px;
+}
+.audio-option-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.audio-option-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-family: inherit;
+  background: white;
+  cursor: pointer;
+}
+.audio-word-count-btns {
+  display: flex;
+  gap: 10px;
+}
+.word-count-btn {
+  flex: 1;
+  padding: 14px 12px;
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  color: var(--text);
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.word-count-btn .count-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-light);
+}
+.word-count-btn:hover { border-color: var(--primary-light); background: #eff6ff; }
+.word-count-btn.active {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: white;
+}
+.word-count-btn.active .count-label { color: rgba(255,255,255,0.8); }
+
+/* Original meet audio - collapsed */
+.meet-audio-section {
+  margin-top: 40px;
+  text-align: left;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.meet-audio-section summary {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-light);
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+.meet-audio-section summary:hover { color: var(--primary); }
+.meet-audio-section .audio-cards {
+  margin-top: 16px;
+}
+
+/* Audio cards (shared with meet recordings) */
 .audio-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
 }
 .audio-card {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 20px;
+  padding: 16px;
   box-shadow: var(--shadow);
 }
-.audio-card h3 { color: var(--primary); margin-bottom: 12px; font-size: 16px; }
+.audio-card h3 { color: var(--primary); margin-bottom: 10px; font-size: 15px; }
 .audio-track {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
-  padding: 8px 0;
+  gap: 10px;
+  margin-bottom: 8px;
+  padding: 6px 0;
   border-bottom: 1px solid var(--border);
 }
 .audio-track:last-child { border-bottom: none; margin-bottom: 0; }
 .audio-track span {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-  min-width: 110px;
+  min-width: 80px;
 }
-.audio-track audio { flex: 1; height: 32px; }
+.audio-track audio { flex: 1; height: 28px; }
+
+/* Audio Test Active */
+.audio-test-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.audio-test-progress { flex: 1; min-width: 200px; }
+.audio-test-progress span { font-size: 14px; font-weight: 500; }
+.audio-test-score-display { font-size: 18px; font-weight: 700; color: var(--primary); }
+
+.audio-test-card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 36px;
+  max-width: 700px;
+  margin: 0 auto;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+
+.audio-test-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--primary);
+  margin-bottom: 24px;
+  min-height: 40px;
+}
+.audio-ready {
+  font-size: 20px;
+  color: var(--success);
+  font-weight: 600;
+}
+
+/* Animated pulse dot */
+.audio-pulse {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--primary);
+  animation: pulse 1s ease-in-out infinite;
+}
+.audio-pulse.pulse-green {
+  background: var(--success);
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.3); opacity: 1; }
+}
+
+.audio-test-controls {
+  margin-bottom: 20px;
+}
+
+.audio-test-input-area {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.audio-test-input-area input {
+  padding: 14px 18px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 20px;
+  font-family: inherit;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+.audio-test-input-area input:focus {
+  outline: none;
+  border-color: var(--primary-light);
+}
+.audio-test-input-area input:disabled {
+  background: #f8fafc;
+  color: var(--text-light);
+}
+
+.audio-test-feedback {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-weight: 500;
+}
+.audio-test-feedback.correct {
+  background: #f0fdf4;
+  color: var(--success);
+  border: 1px solid #bbf7d0;
+}
+.audio-test-feedback.incorrect {
+  background: #fef2f2;
+  color: var(--error);
+  border: 1px solid #fecaca;
+}
+
+/* Audio Test Results */
+.audio-test-results { text-align: center; padding: 20px; }
+.audio-test-results h2 { font-size: 28px; margin-bottom: 8px; }
+
+.audio-test-grade { margin: 12px 0 20px; }
+.grade-letter {
+  display: inline-block;
+  font-size: 64px;
+  font-weight: 800;
+  width: 90px;
+  height: 90px;
+  line-height: 90px;
+  border-radius: 50%;
+  text-align: center;
+}
+.grade-a { background: #dcfce7; color: var(--success); }
+.grade-b { background: #dbeafe; color: var(--primary); }
+.grade-c { background: #fef9c3; color: #a16207; }
+.grade-d { background: #fed7aa; color: #c2410c; }
+.grade-f { background: #fecaca; color: var(--error); }
+
+.audio-test-result-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.result-num {
+  font-size: 12px;
+  color: var(--text-light);
+  min-width: 28px;
+}
 
 /* Footer */
 footer {
@@ -781,6 +1004,10 @@ footer {
   .proof-group { grid-template-columns: repeat(3, 1fr); }
   .nav-btn { padding: 10px 12px; font-size: 12px; }
   .practice-options { flex-direction: column; align-items: center; }
+  .audio-word-count-btns { flex-direction: column; }
+  .audio-test-card { padding: 24px 16px; }
+  .audio-test-input-area input { font-size: 16px; }
+  .grade-letter { font-size: 48px; width: 72px; height: 72px; line-height: 72px; }
 }
 @media (max-width: 480px) {
   .word-grid { grid-template-columns: 1fr; }

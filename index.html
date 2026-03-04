@@ -285,68 +285,105 @@
 
     <!-- AUDIO TESTS TAB -->
     <section id="tab-audio" class="tab-content">
-      <h2>Practice Test Audio</h2>
-      <p>Listen to the pronouncer and practice writing words just like in a real UIL meet.</p>
-      <div class="audio-cards">
-        <div class="audio-card">
-          <h3>Virtual Challenge Meet #1</h3>
-          <div class="audio-track">
-            <span>Words 1-40</span>
-            <audio controls src="audio/meet1-words-1-40.mp3"></audio>
+      <!-- Setup Screen -->
+      <div class="audio-test-setup" id="audioTestSetup">
+        <h2>Audio Spelling Test</h2>
+        <p>Listen carefully. The pronouncer will say the word twice, read the definition, then say the word one more time. Type the correct spelling.</p>
+        <div class="audio-test-options">
+          <div class="audio-option-group">
+            <label>Number of words:</label>
+            <div class="audio-word-count-btns" id="audioWordCountBtns">
+              <button class="word-count-btn" data-count="15">15 Words</button>
+              <button class="word-count-btn active" data-count="35">35 Words</button>
+              <button class="word-count-btn" data-count="70">70 Words<span class="count-label">Full Test</span></button>
+            </div>
           </div>
-          <div class="audio-track">
-            <span>Words 41-70</span>
-            <audio controls src="audio/meet1-words-41-70.mp3"></audio>
-          </div>
-          <div class="audio-track">
-            <span>Tiebreaker 1-20</span>
-            <audio controls src="audio/meet1-tiebreaker-1-20.mp3"></audio>
-          </div>
-        </div>
-        <div class="audio-card">
-          <h3>Virtual Challenge Meet #2</h3>
-          <div class="audio-track">
-            <span>Words 1-40</span>
-            <audio controls src="audio/meet2-words-1-40.mp3"></audio>
-          </div>
-          <div class="audio-track">
-            <span>Words 41-70</span>
-            <audio controls src="audio/meet2-words-41-70.mp3"></audio>
-          </div>
-          <div class="audio-track">
-            <span>Tiebreaker 1-20</span>
-            <audio controls src="audio/meet2-tiebreaker-1-20.mp3"></audio>
+          <div class="audio-option-group">
+            <label>Word source:</label>
+            <select id="audioTestSource">
+              <option value="all">All Words (Random)</option>
+              <option value="vocab">Vocabulary Words Only</option>
+              <option value="unstudied">Not Yet Studied</option>
+              <option value="meet1">Meet #1 Words (with definitions)</option>
+            </select>
           </div>
         </div>
-        <div class="audio-card">
-          <h3>Virtual Challenge Meet #3</h3>
-          <div class="audio-track">
-            <span>Words 1-40</span>
-            <audio controls src="audio/meet3-words-1-40.mp3"></audio>
+        <button class="btn btn-primary btn-large" id="startAudioTest">Start Test</button>
+
+        <details class="meet-audio-section">
+          <summary>Original Meet Audio Recordings</summary>
+          <div class="audio-cards">
+            <div class="audio-card">
+              <h3>Meet #1</h3>
+              <div class="audio-track"><span>Words 1-40</span><audio controls src="audio/meet1-words-1-40.mp3"></audio></div>
+              <div class="audio-track"><span>Words 41-70</span><audio controls src="audio/meet1-words-41-70.mp3"></audio></div>
+              <div class="audio-track"><span>Tiebreaker</span><audio controls src="audio/meet1-tiebreaker-1-20.mp3"></audio></div>
+            </div>
+            <div class="audio-card">
+              <h3>Meet #2</h3>
+              <div class="audio-track"><span>Words 1-40</span><audio controls src="audio/meet2-words-1-40.mp3"></audio></div>
+              <div class="audio-track"><span>Words 41-70</span><audio controls src="audio/meet2-words-41-70.mp3"></audio></div>
+              <div class="audio-track"><span>Tiebreaker</span><audio controls src="audio/meet2-tiebreaker-1-20.mp3"></audio></div>
+            </div>
+            <div class="audio-card">
+              <h3>Meet #3</h3>
+              <div class="audio-track"><span>Words 1-40</span><audio controls src="audio/meet3-words-1-40.mp3"></audio></div>
+              <div class="audio-track"><span>Words 41-70</span><audio controls src="audio/meet3-words-41-70.mp3"></audio></div>
+              <div class="audio-track"><span>Tiebreaker</span><audio controls src="audio/meet3-tiebreaker-1-20.mp3"></audio></div>
+            </div>
+            <div class="audio-card">
+              <h3>Meet #4</h3>
+              <div class="audio-track"><span>Words 1-40</span><audio controls src="audio/meet4-words-1-40.mp3"></audio></div>
+              <div class="audio-track"><span>Words 41-70</span><audio controls src="audio/meet4-words-41-70.mp3"></audio></div>
+              <div class="audio-track"><span>Tiebreaker</span><audio controls src="audio/meet4-tiebreaker-1-20.mp3"></audio></div>
+            </div>
           </div>
-          <div class="audio-track">
-            <span>Words 41-70</span>
-            <audio controls src="audio/meet3-words-41-70.mp3"></audio>
+        </details>
+      </div>
+
+      <!-- Active Test Screen -->
+      <div class="audio-test-active hidden" id="audioTestActive">
+        <div class="audio-test-header">
+          <div class="audio-test-progress">
+            <span>Word <strong id="audioTestNum">1</strong> of <strong id="audioTestTotal">35</strong></span>
+            <div class="progress-bar">
+              <div class="progress-fill" id="audioTestProgressBar"></div>
+            </div>
           </div>
-          <div class="audio-track">
-            <span>Tiebreaker 1-20</span>
-            <audio controls src="audio/meet3-tiebreaker-1-20.mp3"></audio>
+          <div class="audio-test-score-display">
+            Score: <span id="audioTestScore">0</span>
           </div>
         </div>
-        <div class="audio-card">
-          <h3>Virtual Challenge Meet #4</h3>
-          <div class="audio-track">
-            <span>Words 1-40</span>
-            <audio controls src="audio/meet4-words-1-40.mp3"></audio>
+
+        <div class="audio-test-card">
+          <div class="audio-test-status" id="audioTestStatus">
+            <div class="audio-pulse"></div>
+            <span>Preparing audio...</span>
           </div>
-          <div class="audio-track">
-            <span>Words 41-70</span>
-            <audio controls src="audio/meet4-words-41-70.mp3"></audio>
+
+          <div class="audio-test-controls">
+            <button class="btn btn-speak btn-large" id="audioTestReplay">&#128266; Replay Word</button>
           </div>
-          <div class="audio-track">
-            <span>Tiebreaker 1-20</span>
-            <audio controls src="audio/meet4-tiebreaker-1-20.mp3"></audio>
+
+          <div class="audio-test-input-area">
+            <input type="text" id="audioTestInput" placeholder="Type the word you heard..." autocomplete="off" autocapitalize="off" spellcheck="false" disabled>
+            <button class="btn btn-primary" id="audioTestSubmit" disabled>Submit</button>
           </div>
+
+          <div class="audio-test-feedback hidden" id="audioTestFeedback"></div>
+          <button class="btn btn-primary hidden" id="audioTestNext">Next Word</button>
+        </div>
+      </div>
+
+      <!-- Results Screen -->
+      <div class="audio-test-results hidden" id="audioTestResults">
+        <h2>Test Complete!</h2>
+        <div class="results-score" id="audioTestResultsScore"></div>
+        <div class="audio-test-grade" id="audioTestGrade"></div>
+        <div class="results-list" id="audioTestResultsList"></div>
+        <div class="audio-test-result-actions">
+          <button class="btn btn-primary btn-large" id="restartAudioTest">Take Another Test</button>
+          <button class="btn btn-outline btn-large" id="reviewMissedWords">Review Missed Words</button>
         </div>
       </div>
     </section>
