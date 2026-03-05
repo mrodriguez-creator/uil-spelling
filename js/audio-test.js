@@ -48,7 +48,7 @@ App.startAudioTest = function() {
     return;
   }
 
-  App.shuffleArray(pool);
+  App.weightedShuffle(pool);
   var selected = pool.slice(0, Math.min(count, pool.length));
 
   var wordsReady = selected.map(function(w) {
@@ -190,11 +190,13 @@ App.submitAudioTestAnswer = function() {
     feedback.classList.add('correct');
     feedback.textContent = '\u2713 Correct!';
     App.setStatus(w.word, App.getStatus(w.word) === 'mastered' ? 'mastered' : 'studied');
+    App.recordAccuracy(w.word, true);
   } else {
     feedback.classList.add('incorrect');
     feedback.innerHTML = '\u2717 Incorrect. The correct spelling is: <strong>' + App.escapeHtml(w.word) + '</strong>' +
       (w.alt ? ' (also accepted: ' + App.escapeHtml(w.alt) + ')' : '');
     App.recordMiss(w.word, 'audio');
+    App.recordAccuracy(w.word, false);
   }
 
   App.state.audioTest.results.push({

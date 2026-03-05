@@ -293,6 +293,7 @@ App.handleProofAnswer = function(selectedIdx, q, grid) {
         feedback.innerHTML = '\u2717 Not quite. The correct spelling is: <strong>' + App.escapeHtml(q.correctSpelling) + '</strong>';
         App.recordMiss(q.correctSpelling, 'quiz');
       }
+      App.recordAccuracy(q.correctSpelling, spellCorrect);
       App.state.quizResults.push({ correct: spellCorrect, word: q.correctSpelling, answer: typed, part: q.part });
       document.getElementById('quizNext').classList.remove('hidden');
     };
@@ -327,6 +328,7 @@ App.handleProofAnswer = function(selectedIdx, q, grid) {
       }
       App.state.quizResults.push({ correct: false, word: q.correctSpelling, answer: typed, part: q.part });
       App.recordMiss(q.correctSpelling, 'quiz');
+      App.recordAccuracy(q.correctSpelling, false);
       document.getElementById('quizNext').classList.remove('hidden');
     };
 
@@ -356,6 +358,7 @@ App.submitQuizAnswer = function() {
     feedback.innerHTML = '\u2717 Incorrect. Correct spelling: <strong>' + App.escapeHtml(q.answer) + '</strong>';
     App.recordMiss(q.answer, 'quiz');
   }
+  App.recordAccuracy(q.answer, correct);
 
   App.state.quizResults.push({ correct: correct, word: q.answer, answer: answer });
   document.getElementById('quizAnswer').disabled = true;
@@ -385,6 +388,7 @@ App.handleDefAnswer = function(selectedIdx, q, container) {
     feedback.textContent = '\u2717 Incorrect. The correct definition is: "' + q.correctDef + '"';
     App.recordMiss(q.word, 'quiz');
   }
+  App.recordAccuracy(q.word, correct);
 
   App.state.quizResults.push({ correct: correct, word: q.word, part: q.part });
   document.getElementById('quizNext').classList.remove('hidden');
@@ -414,6 +418,7 @@ App.handleVocabAnswer = function(selectedIdx, q, container) {
     feedback.textContent = '\u2717 Incorrect. The answer is "' + q.answer + '".';
     App.recordMiss(q.answer, 'quiz');
   }
+  App.recordAccuracy(q.answer, correct);
 
   App.state.quizResults.push({ correct: correct, word: q.answer, part: q.part });
   document.getElementById('quizNext').classList.remove('hidden');

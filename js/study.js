@@ -46,6 +46,12 @@ App.buildStudyDeck = function() {
     case 'unstudied': App.state.studyDeck = App.state.words.filter(function(w) { return !App.getStatus(w.word); }); break;
     case 'difficult': App.state.studyDeck = App.state.words.filter(function(w) { return w.word.replace(/\s/g,'').length >= CONFIG.STUDY_MIN_DIFFICULT_LENGTH; }); break;
     case 'missed': App.state.studyDeck = App.state.words.filter(function(w) { return App.getMissCount(w.word) > 0; }); break;
+    case 'needsreview': App.state.studyDeck = App.state.words.filter(function(w) {
+      var acc = App.state.accuracy[w.word.toLowerCase()];
+      if (!acc) return false;
+      var total = acc.correct + acc.incorrect;
+      return total > 0 && (acc.incorrect / total) >= 0.5;
+    }); break;
     default: App.state.studyDeck = App.state.words.slice();
   }
   App.state.currentCard = 0;

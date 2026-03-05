@@ -23,6 +23,7 @@ App.state = {
   quizResults: [],
   fullTestMode: false,
   missed: JSON.parse(localStorage.getItem(CONFIG.STORAGE_MISSED) || '{}'),
+  accuracy: JSON.parse(localStorage.getItem(CONFIG.STORAGE_ACCURACY) || '{}'),
   definitionCache: JSON.parse(localStorage.getItem(CONFIG.STORAGE_DEFS) || '{}'),
   audioManifest: typeof AUDIO_MANIFEST !== 'undefined' ? AUDIO_MANIFEST : null,
   currentAudio: null,
@@ -79,6 +80,67 @@ App.getMissCount = function(word) {
 
 App.getMissedWords = function() {
   return Object.keys(App.state.missed);
+};
+
+// ==================== ACCURACY & SPACED REPETITION ====================
+App.recordAccuracy = function(word, wasCorrect) {
+  var key = word.toLowerCase();
+  if (!App.state.accuracy[key]) {
+    App.state.accuracy[key] = { correct: 0, incorrect: 0, lastSeen: null };
+  }
+  if (wasCorrect) {
+    App.state.accuracy[key].correct++;
+  } else {
+    App.state.accuracy[key].incorrect++;
+  }
+  App.state.accuracy[key].lastSeen = Date.now();
+  localStorage.setItem(CONFIG.STORAGE_ACCURACY, JSON.stringify(App.state.accuracy));
+};
+
+App.getWordWeight = function(word) {
+  var key = word.toLowerCase();
+  var weight = 1;
+
+  // Factor 1: Error rate from accuracy data
+  var acc = App.state.accuracy[key];
+  if (acc) {
+    var total = acc.correct + acc.incorrect;
+    if (total > 0) {
+      var errorRate = acc.incorrect / total;
+      weight += errorRate * 3; // up to 3x boost for 100% error rate
+    }
+    // Factor 2: Recency — boost words not seen recently
+    if (acc.lastSeen) {
+      var hoursSince = (Date.now() - acc.lastSeen) / (1000 * 60 * 60);
+      if (hoursSince > 24) weight += 1;
+      else if (hoursSince > 6) weight += 0.5;
+    }
+  } else {
+    // Never practiced: slight boost to introduce it
+    weight += 0.5;
+  }
+
+  // Factor 3: Miss count
+  var missCount = App.getMissCount(word);
+  if (missCount > 0) {
+    weight += Math.min(missCount, 5); // up to 5x boost
+  }
+
+  return weight;
+};
+
+App.weightedShuffle = function(arr) {
+  // Assign weights and sort by weighted random
+  var weighted = arr.map(function(item) {
+    var word = item.word || item;
+    var w = App.getWordWeight(word);
+    return { item: item, sort: Math.pow(Math.random(), 1 / w) };
+  });
+  weighted.sort(function(a, b) { return b.sort - a.sort; });
+  for (var i = 0; i < arr.length; i++) {
+    arr[i] = weighted[i].item;
+  }
+  return arr;
 };
 
 // ==================== DEFINITIONS ====================

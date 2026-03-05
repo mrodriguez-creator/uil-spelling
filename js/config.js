@@ -43,6 +43,7 @@ var CONFIG = {
   STORAGE_STUDIED: 'uil-studied',
   STORAGE_DEFS: 'uil-defs',
   STORAGE_MISSED: 'uil-missed',
+  STORAGE_ACCURACY: 'uil-accuracy',
 
   // ==================== ID OFFSET RANGES ====================
   // Used when creating word objects from practice test data
