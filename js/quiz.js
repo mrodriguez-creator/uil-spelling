@@ -33,24 +33,7 @@ App.startQuiz = function(type) {
   document.getElementById('quizTotal').textContent = App.state.quizQuestions.length;
   document.getElementById('quizScore').textContent = '0';
 
-  App.state.quizTimeLeft = CONFIG.QUIZ_TIME_SECONDS;
-  App.updateTimer();
-  App.state.quizTimer = setInterval(function() {
-    App.state.quizTimeLeft--;
-    App.updateTimer();
-    if (App.state.quizTimeLeft <= 0) {
-      clearInterval(App.state.quizTimer);
-      App.showQuizResults();
-    }
-  }, 1000);
-
   App.showQuizQuestion();
-};
-
-App.updateTimer = function() {
-  var m = Math.floor(App.state.quizTimeLeft / 60);
-  var s = App.state.quizTimeLeft % 60;
-  document.getElementById('quizTimer').textContent = m + ':' + s.toString().padStart(2, '0');
 };
 
 App.generateProofreadingQuiz = function() {
@@ -228,11 +211,35 @@ App.handleProofAnswer = function(selectedIdx, q, grid) {
     buttons[selectedIdx].classList.add('wrong-answer');
     buttons[q.correctIndex].classList.add('correct-answer');
     feedback.classList.add('incorrect');
-    feedback.textContent = '\u2717 Wrong. "' + q.misspelled + '" (position ' + (q.correctIndex + 1) + ') should be "' + q.correctSpelling + '".';
-  }
+    feedback.innerHTML = '\u2717 Wrong pick. The misspelled word was "' + App.escapeHtml(q.misspelled) + '". Now spell it correctly:' +
+      '<div class="proof-spell-input"><input type="text" id="proofSpellInput" class="quiz-spell-input" placeholder="Type correct spelling...">' +
+      '<button class="btn btn-small" id="proofSpellSubmit">Check</button></div>';
 
-  App.state.quizResults.push({ correct: false, word: q.correctSpelling });
-  document.getElementById('quizNext').classList.remove('hidden');
+    var spellInput2 = document.getElementById('proofSpellInput');
+    var spellSubmit2 = document.getElementById('proofSpellSubmit');
+    spellInput2.focus();
+
+    var handleSpell2 = function() {
+      var typed = spellInput2.value.trim();
+      if (!typed) return;
+      spellInput2.disabled = true;
+      spellSubmit2.disabled = true;
+
+      if (typed.toLowerCase() === q.correctSpelling.toLowerCase()) {
+        feedback.classList.remove('incorrect');
+        feedback.classList.add('correct');
+        feedback.innerHTML = '\u2713 Good \u2014 "' + App.escapeHtml(q.correctSpelling) + '" is spelled correctly! (No point for wrong pick)';
+      } else {
+        feedback.innerHTML = '\u2717 Incorrect. The correct spelling is: <strong>' + App.escapeHtml(q.correctSpelling) + '</strong>';
+      }
+      App.state.quizResults.push({ correct: false, word: q.correctSpelling, answer: typed });
+      document.getElementById('quizNext').classList.remove('hidden');
+    };
+
+    spellSubmit2.addEventListener('click', handleSpell2);
+    spellInput2.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleSpell2(); });
+    return;
+  }
 };
 
 App.submitQuizAnswer = function() {
@@ -291,7 +298,6 @@ App.nextQuizQuestion = function() {
   document.getElementById('quizSubmitAnswer').disabled = false;
 
   if (App.state.quizIndex >= App.state.quizQuestions.length) {
-    clearInterval(App.state.quizTimer);
     App.showQuizResults();
   } else {
     App.showQuizQuestion();
@@ -301,7 +307,6 @@ App.nextQuizQuestion = function() {
 App.showQuizResults = function() {
   document.getElementById('quizActive').classList.add('hidden');
   document.getElementById('quizResults').classList.remove('hidden');
-  clearInterval(App.state.quizTimer);
 
   var total = App.state.quizResults.length;
   var pct = total > 0 ? Math.round(App.state.quizScore / total * 100) : 0;
