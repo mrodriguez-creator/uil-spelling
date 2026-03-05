@@ -1508,6 +1508,56 @@ footer {
   flex-shrink: 0;
 }
 
+/* Word Families */
+.family-type-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.family-tab-btn {
+  background: var(--card); border: 2px solid var(--border);
+  border-radius: var(--radius); padding: 8px 16px; font-size: 13px;
+  font-weight: 600; cursor: pointer; font-family: inherit;
+  transition: all 0.2s;
+}
+.family-tab-btn.active { border-color: var(--primary); background: #dbeafe; color: var(--primary); }
+.family-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.family-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px; cursor: pointer;
+  transition: all 0.2s;
+}
+.family-card:hover { border-color: var(--primary-light); box-shadow: var(--shadow); }
+.family-card.expanded { border-color: var(--primary); }
+.family-card-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.family-root { font-size: 18px; font-weight: 700; color: var(--primary); }
+.family-meaning { font-size: 13px; color: var(--text-light); margin-top: 2px; }
+.family-origin { font-size: 11px; color: var(--text-light); font-style: italic; }
+.family-count {
+  background: var(--primary); color: white; border-radius: 12px;
+  padding: 2px 10px; font-size: 12px; font-weight: 600; flex-shrink: 0;
+}
+.family-words { margin-top: 12px; display: none; }
+.family-card.expanded .family-words { display: block; }
+.family-word-list {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.family-word-item {
+  background: var(--bg); border-radius: 4px; padding: 6px 10px;
+  font-size: 13px; cursor: pointer; transition: background 0.15s;
+}
+.family-word-item:hover { background: #dbeafe; }
+.family-highlight {
+  background: #fef3c7; padding: 0 1px; border-radius: 2px; font-weight: 700;
+}
+.family-empty { color: var(--text-light); font-style: italic; padding: 12px 0; }
+
+/* Swipe hint on flashcards */
+.swipe-hint { font-size: 12px; color: var(--text-light); text-align: center; margin-top: 4px; }
+.flashcard-container { transition: transform 0.15s ease-out; }
+.flashcard-container.swipe-left { transform: translateX(-15px); }
+.flashcard-container.swipe-right { transform: translateX(15px); }
+
 /* Responsive */
 @media (max-width: 768px) {
   .header-content { padding: 10px 16px; }
@@ -1520,7 +1570,6 @@ footer {
   .flashcard-word { font-size: 28px; }
   .quiz-options { grid-template-columns: 1fr; }
   .proof-group { grid-template-columns: repeat(3, 1fr); }
-  .nav-btn { padding: 8px 10px; font-size: 11px; }
   .dash-grid { grid-template-columns: 1fr; }
   .dash-card-wide { grid-column: 1; }
   .practice-options { flex-direction: column; align-items: center; }
@@ -1528,6 +1577,16 @@ footer {
   .audio-test-card { padding: 24px 16px; }
   .audio-test-input-area input { font-size: 16px; }
   .grade-letter { font-size: 48px; width: 72px; height: 72px; line-height: 72px; }
+  /* Touch targets: minimum 44px */
+  .nav-btn { padding: 12px 14px; font-size: 12px; min-height: 44px; flex-shrink: 0; }
+  .btn { min-height: 44px; }
+  .accent-btn { width: 44px; height: 44px; font-size: 18px; }
+  .ref-tab-btn { min-height: 44px; padding: 12px 16px; }
+  .family-tab-btn { min-height: 44px; }
+  .modal-close { min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+  .card-nav { flex-wrap: wrap; gap: 8px; }
+  .card-nav .btn { padding: 12px 16px; font-size: 14px; flex: 1; min-width: 0; }
+  .family-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 480px) {
   .word-grid { grid-template-columns: 1fr; }
@@ -1535,4 +1594,24 @@ footer {
   .filter-group { width: 100%; }
   .filter-group select { flex: 1; }
   .proof-group { grid-template-columns: repeat(2, 1fr); }
+  /* Nav scroll indicators */
+  nav { -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory; position: relative; }
+  .nav-btn { scroll-snap-align: start; padding: 12px 12px; font-size: 11px; }
+  /* Accent buttons */
+  .accent-helper { gap: 6px; justify-content: center; }
+  .accent-btn { width: 44px; height: 44px; font-size: 20px; }
+  .accent-helper-label { width: 100%; text-align: center; margin-bottom: 4px; }
+  /* Study cards */
+  .flashcard { height: 240px; }
+  .flashcard-word { font-size: 22px; }
+  .flashcard-back .flashcard-word { font-size: 18px; }
+  .card-nav { flex-direction: column; align-items: stretch; }
+  .card-nav .btn { width: 100%; padding: 14px; font-size: 14px; }
+  /* Inputs: prevent iOS auto-zoom */
+  input[type="text"], select { font-size: 16px; }
+  /* Modal actions */
+  .modal-actions { flex-direction: column; }
+  .modal-actions .btn { width: 100%; min-height: 44px; }
+  /* Quiz types */
+  .quiz-types { grid-template-columns: 1fr; }
 }

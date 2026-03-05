@@ -249,6 +249,7 @@
         <button class="ref-tab-btn" data-reftab="roots">Spelling Rules</button>
         <button class="ref-tab-btn" data-reftab="wordroots">Word Roots</button>
         <button class="ref-tab-btn" data-reftab="confused">Confused Pairs</button>
+        <button class="ref-tab-btn" data-reftab="wordfamilies">Word Families</button>
       </div>
       <div class="ref-search">
         <input type="text" id="refSearch" placeholder="Search prefixes/suffixes...">
@@ -317,6 +318,16 @@
         </div>
         <h3 style="margin-top:24px;margin-bottom:12px;">Common Roots Reference</h3>
         <div id="rootsGrid" class="ref-grid"></div>
+      </div>
+      <div id="ref-wordfamilies" class="ref-content">
+        <h3>Browse Word Families</h3>
+        <p style="margin-bottom:16px;color:var(--text-light);">Words grouped by shared roots, prefixes, and suffixes. Click a family to see all matching words.</p>
+        <div class="family-type-tabs">
+          <button class="family-tab-btn active" data-familytype="roots">By Root</button>
+          <button class="family-tab-btn" data-familytype="prefixes">By Prefix</button>
+          <button class="family-tab-btn" data-familytype="suffixes">By Suffix</button>
+        </div>
+        <div id="familyBrowser"></div>
       </div>
     </section>
 
@@ -603,6 +614,7 @@
   <script src="js/quiz.js"></script>
   <script src="js/reference.js"></script>
   <script src="js/audio-test.js"></script>
+  <script src="js/word-families.js"></script>
   <script src="js/dashboard.js"></script>
   <script src="js/speed-round.js"></script>
   <!-- Entry point -->

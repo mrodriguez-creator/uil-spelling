@@ -37,6 +37,7 @@ App.setupStudyCards = function() {
   });
 
   App.buildStudyDeck();
+  App.setupSwipeNavigation();
 };
 
 App.buildStudyDeck = function() {
@@ -121,4 +122,46 @@ App.buildCardDetails = function(w, def, analysis) {
   details += '<div class="detail-row"><div class="detail-label">Letters</div>' + w.word.length + ' characters, ~' + App.countSyllables(w.word) + ' syllable(s)</div>';
 
   document.getElementById('flashcardDetails').innerHTML = details;
+};
+
+// ==================== SWIPE NAVIGATION ====================
+App.setupSwipeNavigation = function() {
+  var container = document.querySelector('.flashcard-container');
+  if (!container || !('ontouchstart' in window)) return;
+
+  var startX = 0, startY = 0, startTime = 0;
+
+  container.addEventListener('touchstart', function(e) {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    startTime = Date.now();
+    container.classList.remove('swipe-left', 'swipe-right');
+  }, { passive: true });
+
+  container.addEventListener('touchend', function(e) {
+    var deltaX = e.changedTouches[0].clientX - startX;
+    var deltaY = e.changedTouches[0].clientY - startY;
+    var elapsed = Date.now() - startTime;
+
+    if (elapsed > 300 || Math.abs(deltaX) < 50) return;
+
+    // Only count near-horizontal swipes
+    var angle = Math.abs(Math.atan2(deltaY, deltaX) * 180 / Math.PI);
+    if (angle > 30 && angle < 150) return;
+
+    if (deltaX < 0) {
+      container.classList.add('swipe-left');
+      document.getElementById('nextCard').click();
+    } else {
+      container.classList.add('swipe-right');
+      document.getElementById('prevCard').click();
+    }
+    setTimeout(function() {
+      container.classList.remove('swipe-left', 'swipe-right');
+    }, 150);
+  }, { passive: true });
+
+  // Update hint text for touch users
+  var hints = document.querySelectorAll('.flashcard-hint');
+  if (hints.length > 0) hints[0].textContent = 'Tap to reveal \u00B7 Swipe to navigate';
 };

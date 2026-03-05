@@ -36,6 +36,9 @@ App.setupReference = function() {
 
   // Confused Pairs tab
   App.setupConfusedPairs();
+
+  // Word Families tab
+  App.setupWordFamilies();
 };
 
 App.setupWordRoots = function() {
