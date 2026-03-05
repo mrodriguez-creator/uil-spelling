@@ -24,8 +24,8 @@ App.startQuiz = function(type) {
 
   switch (type) {
     case 'proofreading': App.generateProofreadingQuiz(); break;
-    case 'spelling': App.generateSpellingQuiz(); break;
     case 'vocabulary': App.generateVocabularyQuiz(); break;
+    case 'definition': App.generateDefinitionQuiz(); break;
   }
 
   document.getElementById('quizSetup').classList.add('hidden');
@@ -81,18 +81,25 @@ App.createMisspelling = function(word) {
   return result === word ? word.slice(0, -1) + (word.endsWith('e') ? 'a' : 'e') : result;
 };
 
-App.generateSpellingQuiz = function() {
+App.generateDefinitionQuiz = function() {
   var wordsWithDefs = [];
   for (var key in PRACTICE_TESTS) {
     PRACTICE_TESTS[key].words.forEach(function(w) { wordsWithDefs.push(w); });
   }
   App.shuffleArray(wordsWithDefs);
   App.state.quizQuestions = wordsWithDefs.slice(0, CONFIG.QUIZ_QUESTION_COUNT).map(function(w) {
+    var wrongDefs = wordsWithDefs
+      .filter(function(x) { return x.word !== w.word; })
+      .sort(function() { return Math.random() - 0.5; })
+      .slice(0, 3)
+      .map(function(x) { return x.def; });
+    var options = App.shuffleArray([w.def].concat(wrongDefs));
     return {
-      type: 'spelling',
-      def: w.def,
-      answer: w.word,
-      alt: w.alt
+      type: 'definition',
+      word: w.word,
+      correctDef: w.def,
+      options: options,
+      correctIndex: options.indexOf(w.def)
     };
   });
 };
@@ -134,11 +141,15 @@ App.showQuizQuestion = function() {
       grid.appendChild(btn);
     });
     optionsEl.appendChild(grid);
-  } else if (q.type === 'spelling') {
-    questionEl.textContent = 'Spell the word defined as: "' + q.def + '"';
-    inputEl.classList.remove('hidden');
-    document.getElementById('quizAnswer').value = '';
-    document.getElementById('quizAnswer').focus();
+  } else if (q.type === 'definition') {
+    questionEl.textContent = 'What is the definition of "' + q.word + '"?';
+    q.options.forEach(function(opt, i) {
+      var btn = document.createElement('button');
+      btn.className = 'quiz-option';
+      btn.textContent = opt;
+      btn.addEventListener('click', function() { App.handleDefAnswer(i, q, optionsEl); });
+      optionsEl.appendChild(btn);
+    });
   } else if (q.type === 'vocabulary') {
     questionEl.innerHTML = 'Choose the word that best completes the sentence:<br><em>' + App.escapeHtml(q.sentence) + '</em>';
     q.options.forEach(function(opt, i) {
@@ -251,6 +262,32 @@ App.submitQuizAnswer = function() {
   App.state.quizResults.push({ correct: correct, word: q.answer, answer: answer });
   document.getElementById('quizAnswer').disabled = true;
   document.getElementById('quizSubmitAnswer').disabled = true;
+  document.getElementById('quizNext').classList.remove('hidden');
+};
+
+App.handleDefAnswer = function(selectedIdx, q, container) {
+  var buttons = container.querySelectorAll('.quiz-option');
+  buttons.forEach(function(b) { b.style.pointerEvents = 'none'; });
+
+  var feedback = document.getElementById('quizFeedback');
+  feedback.classList.remove('hidden', 'correct', 'incorrect');
+
+  var correct = selectedIdx === q.correctIndex;
+
+  if (correct) {
+    App.state.quizScore++;
+    document.getElementById('quizScore').textContent = App.state.quizScore;
+    buttons[selectedIdx].classList.add('correct-answer');
+    feedback.classList.add('correct');
+    feedback.textContent = '\u2713 Correct!';
+  } else {
+    buttons[selectedIdx].classList.add('wrong-answer');
+    buttons[q.correctIndex].classList.add('correct-answer');
+    feedback.classList.add('incorrect');
+    feedback.textContent = '\u2717 Incorrect. The correct definition is: "' + q.correctDef + '"';
+  }
+
+  App.state.quizResults.push({ correct: correct, word: q.word });
   document.getElementById('quizNext').classList.remove('hidden');
 };
 
