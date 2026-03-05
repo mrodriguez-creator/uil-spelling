@@ -54,6 +54,7 @@ App.filterWords = function() {
     if (statusFilter === 'unstudied' && App.getStatus(w.word)) return false;
     if (statusFilter === 'studied' && App.getStatus(w.word) !== 'studied') return false;
     if (statusFilter === 'mastered' && App.getStatus(w.word) !== 'mastered') return false;
+    if (statusFilter === 'missed' && App.getMissCount(w.word) === 0) return false;
 
     return true;
   });
@@ -99,6 +100,15 @@ App.openModal = function(wordObj) {
   document.getElementById('modalAlt').textContent = wordObj.alt ? 'Also: ' + wordObj.alt : '';
   var vocabBadge = document.getElementById('modalVocab');
   wordObj.vocab ? vocabBadge.classList.remove('hidden') : vocabBadge.classList.add('hidden');
+
+  var missCount = App.getMissCount(wordObj.word);
+  var missBadge = document.getElementById('modalMissBadge');
+  if (missCount > 0) {
+    missBadge.textContent = 'Missed ' + missCount + 'x';
+    missBadge.classList.remove('hidden');
+  } else {
+    missBadge.classList.add('hidden');
+  }
 
   var defEl = document.getElementById('modalDef');
   var cached = App.findDefinition(wordObj);

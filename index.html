@@ -54,6 +54,7 @@
             <option value="unstudied">Not Yet Studied</option>
             <option value="studied">Studied</option>
             <option value="mastered">Mastered</option>
+            <option value="missed">Missed Words</option>
           </select>
         </div>
       </div>
@@ -67,6 +68,7 @@
           <div class="modal-word" id="modalWord"></div>
           <div class="modal-alt" id="modalAlt"></div>
           <span class="vocab-badge hidden" id="modalVocab">Vocabulary Word</span>
+          <span class="miss-badge hidden" id="modalMissBadge"></span>
           <div class="modal-section">
             <h3>Definition</h3>
             <p id="modalDef">Loading definition...</p>
@@ -96,6 +98,7 @@
           <option value="vocab">Vocabulary Words</option>
           <option value="unstudied">Not Yet Studied</option>
           <option value="difficult">Difficult Words (6+ letters)</option>
+          <option value="missed">Missed Words</option>
         </select>
         <button class="btn btn-outline" id="shuffleCards">Shuffle</button>
         <span class="card-counter"><span id="cardIndex">0</span> / <span id="cardTotal">0</span></span>
@@ -141,6 +144,7 @@
               <option value="all">All Words</option>
               <option value="vocab">Vocabulary Words</option>
               <option value="unstudied">Not Yet Studied</option>
+              <option value="missed">Missed Words</option>
             </select>
           </label>
         </div>
@@ -312,6 +316,7 @@
               <option value="all">All Words (Random)</option>
               <option value="vocab">Vocabulary Words Only</option>
               <option value="unstudied">Not Yet Studied</option>
+              <option value="missed">Missed Words</option>
             </select>
           </div>
         </div>

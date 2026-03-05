@@ -36,6 +36,9 @@ App.startAudioTest = function() {
     case 'unstudied':
       pool = App.state.words.filter(function(w) { return !App.getStatus(w.word); });
       break;
+    case 'missed':
+      pool = App.state.words.filter(function(w) { return App.getMissCount(w.word) > 0; });
+      break;
     default:
       pool = App.state.words.slice();
   }
@@ -191,6 +194,7 @@ App.submitAudioTestAnswer = function() {
     feedback.classList.add('incorrect');
     feedback.innerHTML = '\u2717 Incorrect. The correct spelling is: <strong>' + App.escapeHtml(w.word) + '</strong>' +
       (w.alt ? ' (also accepted: ' + App.escapeHtml(w.alt) + ')' : '');
+    App.recordMiss(w.word, 'audio');
   }
 
   App.state.audioTest.results.push({

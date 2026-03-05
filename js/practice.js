@@ -27,6 +27,7 @@ App.startPractice = function() {
   switch (source) {
     case 'vocab': pool = App.state.words.filter(function(w) { return w.vocab; }); break;
     case 'unstudied': pool = App.state.words.filter(function(w) { return !App.getStatus(w.word); }); break;
+    case 'missed': pool = App.state.words.filter(function(w) { return App.getMissCount(w.word) > 0; }); break;
     default: pool = App.state.words.slice();
   }
 
@@ -85,6 +86,7 @@ App.checkPracticeAnswer = function() {
     feedback.classList.add('incorrect');
     feedback.innerHTML = '\u2717 Incorrect. The correct spelling is: <strong>' + App.escapeHtml(w.word) + '</strong>' +
       (w.alt ? ' (also accepted: ' + App.escapeHtml(w.alt) + ')' : '');
+    App.recordMiss(w.word, 'practice');
   }
 
   App.state.practiceResults.push({ word: w.word, answer: answer, correct: correct });

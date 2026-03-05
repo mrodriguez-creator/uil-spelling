@@ -45,6 +45,7 @@ App.buildStudyDeck = function() {
     case 'vocab': App.state.studyDeck = App.state.words.filter(function(w) { return w.vocab; }); break;
     case 'unstudied': App.state.studyDeck = App.state.words.filter(function(w) { return !App.getStatus(w.word); }); break;
     case 'difficult': App.state.studyDeck = App.state.words.filter(function(w) { return w.word.replace(/\s/g,'').length >= CONFIG.STUDY_MIN_DIFFICULT_LENGTH; }); break;
+    case 'missed': App.state.studyDeck = App.state.words.filter(function(w) { return App.getMissCount(w.word) > 0; }); break;
     default: App.state.studyDeck = App.state.words.slice();
   }
   App.state.currentCard = 0;

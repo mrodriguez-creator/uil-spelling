@@ -280,7 +280,8 @@ App.handleProofAnswer = function(selectedIdx, q, grid) {
       spellInput.disabled = true;
       spellSubmit.disabled = true;
 
-      if (typed.toLowerCase() === q.correctSpelling.toLowerCase()) {
+      var spellCorrect = typed.toLowerCase() === q.correctSpelling.toLowerCase();
+      if (spellCorrect) {
         App.state.quizScore++;
         document.getElementById('quizScore').textContent = App.state.quizScore;
         feedback.classList.remove('incorrect');
@@ -290,8 +291,9 @@ App.handleProofAnswer = function(selectedIdx, q, grid) {
         feedback.classList.remove('correct');
         feedback.classList.add('incorrect');
         feedback.innerHTML = '\u2717 Not quite. The correct spelling is: <strong>' + App.escapeHtml(q.correctSpelling) + '</strong>';
+        App.recordMiss(q.correctSpelling, 'quiz');
       }
-      App.state.quizResults.push({ correct: typed.toLowerCase() === q.correctSpelling.toLowerCase(), word: q.correctSpelling, answer: typed, part: q.part });
+      App.state.quizResults.push({ correct: spellCorrect, word: q.correctSpelling, answer: typed, part: q.part });
       document.getElementById('quizNext').classList.remove('hidden');
     };
 
@@ -324,6 +326,7 @@ App.handleProofAnswer = function(selectedIdx, q, grid) {
         feedback.innerHTML = '\u2717 Incorrect. The correct spelling is: <strong>' + App.escapeHtml(q.correctSpelling) + '</strong>';
       }
       App.state.quizResults.push({ correct: false, word: q.correctSpelling, answer: typed, part: q.part });
+      App.recordMiss(q.correctSpelling, 'quiz');
       document.getElementById('quizNext').classList.remove('hidden');
     };
 
@@ -351,6 +354,7 @@ App.submitQuizAnswer = function() {
   } else {
     feedback.classList.add('incorrect');
     feedback.innerHTML = '\u2717 Incorrect. Correct spelling: <strong>' + App.escapeHtml(q.answer) + '</strong>';
+    App.recordMiss(q.answer, 'quiz');
   }
 
   App.state.quizResults.push({ correct: correct, word: q.answer, answer: answer });
@@ -379,6 +383,7 @@ App.handleDefAnswer = function(selectedIdx, q, container) {
     buttons[q.correctIndex].classList.add('correct-answer');
     feedback.classList.add('incorrect');
     feedback.textContent = '\u2717 Incorrect. The correct definition is: "' + q.correctDef + '"';
+    App.recordMiss(q.word, 'quiz');
   }
 
   App.state.quizResults.push({ correct: correct, word: q.word, part: q.part });
@@ -407,6 +412,7 @@ App.handleVocabAnswer = function(selectedIdx, q, container) {
     buttons[correctIdx].classList.add('correct-answer');
     feedback.classList.add('incorrect');
     feedback.textContent = '\u2717 Incorrect. The answer is "' + q.answer + '".';
+    App.recordMiss(q.answer, 'quiz');
   }
 
   App.state.quizResults.push({ correct: correct, word: q.answer, part: q.part });

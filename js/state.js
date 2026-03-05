@@ -22,6 +22,7 @@ App.state = {
   quizTimeLeft: CONFIG.QUIZ_TIME_SECONDS,
   quizResults: [],
   fullTestMode: false,
+  missed: JSON.parse(localStorage.getItem(CONFIG.STORAGE_MISSED) || '{}'),
   definitionCache: JSON.parse(localStorage.getItem(CONFIG.STORAGE_DEFS) || '{}'),
   audioManifest: typeof AUDIO_MANIFEST !== 'undefined' ? AUDIO_MANIFEST : null,
   currentAudio: null,
@@ -55,6 +56,29 @@ App.getStatus = function(word) {
 App.setStatus = function(word, status) {
   App.state.studied[word.toLowerCase()] = status;
   App.saveStudied();
+};
+
+// ==================== MISSED WORDS ====================
+App.recordMiss = function(word, mode) {
+  var key = word.toLowerCase();
+  if (!App.state.missed[key]) {
+    App.state.missed[key] = { count: 0, lastMissed: null, modes: [] };
+  }
+  App.state.missed[key].count++;
+  App.state.missed[key].lastMissed = Date.now();
+  if (mode && App.state.missed[key].modes.indexOf(mode) === -1) {
+    App.state.missed[key].modes.push(mode);
+  }
+  localStorage.setItem(CONFIG.STORAGE_MISSED, JSON.stringify(App.state.missed));
+};
+
+App.getMissCount = function(word) {
+  var entry = App.state.missed[word.toLowerCase()];
+  return entry ? entry.count : 0;
+};
+
+App.getMissedWords = function() {
+  return Object.keys(App.state.missed);
 };
 
 // ==================== DEFINITIONS ====================

@@ -42,6 +42,7 @@ var CONFIG = {
   // ==================== LOCAL STORAGE KEYS ====================
   STORAGE_STUDIED: 'uil-studied',
   STORAGE_DEFS: 'uil-defs',
+  STORAGE_MISSED: 'uil-missed',
 
   // ==================== ID OFFSET RANGES ====================
   // Used when creating word objects from practice test data
