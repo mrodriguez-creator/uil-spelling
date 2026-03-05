@@ -98,27 +98,13 @@ App.generateSpellingQuiz = function() {
 };
 
 App.generateVocabularyQuiz = function() {
-  var wordsWithDefs = [];
-  for (var key in PRACTICE_TESTS) {
-    PRACTICE_TESTS[key].words.forEach(function(w) { wordsWithDefs.push(w); });
-  }
-  App.shuffleArray(wordsWithDefs);
-
-  App.state.quizQuestions = wordsWithDefs.slice(0, CONFIG.QUIZ_QUESTION_COUNT).map(function(w) {
-    var wrongDefs = wordsWithDefs
-      .filter(function(x) { return x.word !== w.word; })
-      .sort(function() { return Math.random() - 0.5; })
-      .slice(0, 3)
-      .map(function(x) { return x.def; });
-
-    var options = App.shuffleArray([w.def].concat(wrongDefs));
-
+  var pool = App.shuffleArray(VOCAB_QUESTIONS.slice());
+  App.state.quizQuestions = pool.slice(0, CONFIG.QUIZ_QUESTION_COUNT).map(function(q) {
     return {
       type: 'vocabulary',
-      word: w.word,
-      correctDef: w.def,
-      options: options,
-      correctIndex: options.indexOf(w.def)
+      sentence: q.sentence,
+      options: q.options.slice(),
+      answer: q.answer
     };
   });
 };
@@ -154,7 +140,7 @@ App.showQuizQuestion = function() {
     document.getElementById('quizAnswer').value = '';
     document.getElementById('quizAnswer').focus();
   } else if (q.type === 'vocabulary') {
-    questionEl.textContent = 'What is the definition of "' + q.word + '"?';
+    questionEl.innerHTML = 'Choose the word that best completes the sentence:<br><em>' + App.escapeHtml(q.sentence) + '</em>';
     q.options.forEach(function(opt, i) {
       var btn = document.createElement('button');
       btn.className = 'quiz-option';
@@ -275,20 +261,24 @@ App.handleVocabAnswer = function(selectedIdx, q, container) {
   var feedback = document.getElementById('quizFeedback');
   feedback.classList.remove('hidden', 'correct', 'incorrect');
 
-  if (selectedIdx === q.correctIndex) {
+  var selectedWord = q.options[selectedIdx];
+  var correct = selectedWord === q.answer;
+  var correctIdx = q.options.indexOf(q.answer);
+
+  if (correct) {
     App.state.quizScore++;
     document.getElementById('quizScore').textContent = App.state.quizScore;
     buttons[selectedIdx].classList.add('correct-answer');
     feedback.classList.add('correct');
-    feedback.textContent = '\u2713 Correct!';
+    feedback.textContent = '\u2713 Correct! The answer is "' + q.answer + '".';
   } else {
     buttons[selectedIdx].classList.add('wrong-answer');
-    buttons[q.correctIndex].classList.add('correct-answer');
+    buttons[correctIdx].classList.add('correct-answer');
     feedback.classList.add('incorrect');
-    feedback.textContent = '\u2717 Incorrect.';
+    feedback.textContent = '\u2717 Incorrect. The answer is "' + q.answer + '".';
   }
 
-  App.state.quizResults.push({ correct: selectedIdx === q.correctIndex, word: q.word });
+  App.state.quizResults.push({ correct: correct, word: q.answer });
   document.getElementById('quizNext').classList.remove('hidden');
 };
 
