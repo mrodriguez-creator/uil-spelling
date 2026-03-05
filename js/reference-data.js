@@ -234,6 +234,55 @@ const SUFFIXES = {
   "-y": "characterized by"
 };
 
+// Common word roots with meanings, origins, and examples
+const COMMON_ROOTS = [
+  {root:"act",meaning:"do, drive",origin:"Latin",examples:["action","activate","react"]},
+  {root:"anim",meaning:"life, spirit",origin:"Latin",examples:["animal","animate","unanimous"]},
+  {root:"aqua",meaning:"water",origin:"Latin",examples:["aquifer","aqueous","aquarium"]},
+  {root:"aud",meaning:"hear",origin:"Latin",examples:["audience","auditory","audible"]},
+  {root:"bene",meaning:"good, well",origin:"Latin",examples:["benefit","benevolent","benediction"]},
+  {root:"biblio",meaning:"book",origin:"Greek",examples:["bibliography","bibliophile","bible"]},
+  {root:"cap",meaning:"head, take",origin:"Latin",examples:["capital","capture","capable"]},
+  {root:"carn",meaning:"flesh",origin:"Latin",examples:["carcinoma","carnivore","incarnate"]},
+  {root:"chron",meaning:"time",origin:"Greek",examples:["chronic","chronicle","chronology"]},
+  {root:"cide",meaning:"kill",origin:"Latin",examples:["homicide","pesticide","fratricide"]},
+  {root:"cogn",meaning:"know",origin:"Latin",examples:["cognoscente","recognize","cognition"]},
+  {root:"corp",meaning:"body",origin:"Latin",examples:["corpse","corporation","incorporate"]},
+  {root:"cred",meaning:"believe",origin:"Latin",examples:["credit","incredible","credentials"]},
+  {root:"derm",meaning:"skin",origin:"Greek",examples:["dermatology","epidermis","hypodermic"]},
+  {root:"dict",meaning:"say, speak",origin:"Latin",examples:["dictum","predict","dictionary"]},
+  {root:"duc",meaning:"lead",origin:"Latin",examples:["conduct","educate","produce"]},
+  {root:"fac",meaning:"make, do",origin:"Latin",examples:["factory","manufacture","facilitate"]},
+  {root:"gen",meaning:"birth, origin",origin:"Greek",examples:["genome","genesis","generate"]},
+  {root:"graph",meaning:"write",origin:"Greek",examples:["biography","photograph","autograph"]},
+  {root:"ject",meaning:"throw",origin:"Latin",examples:["project","eject","injection"]},
+  {root:"lith",meaning:"stone",origin:"Greek",examples:["lithograph","monolith","megalith"]},
+  {root:"log",meaning:"word, study",origin:"Greek",examples:["biology","dialogue","etymology"]},
+  {root:"luc",meaning:"light",origin:"Latin",examples:["lucid","translucent","elucidate"]},
+  {root:"manu",meaning:"hand",origin:"Latin",examples:["manual","manuscript","manufacture"]},
+  {root:"morph",meaning:"form, shape",origin:"Greek",examples:["metamorphosis","amorphous","morphology"]},
+  {root:"nat",meaning:"born",origin:"Latin",examples:["native","natural","prenatal"]},
+  {root:"path",meaning:"feeling, disease",origin:"Greek",examples:["sympathy","pathology","empathy"]},
+  {root:"ped",meaning:"foot",origin:"Latin",examples:["pedestrian","pedal","impede"]},
+  {root:"phil",meaning:"love",origin:"Greek",examples:["xenophile","philosophy","philanthropy"]},
+  {root:"phon",meaning:"sound",origin:"Greek",examples:["telephone","phonics","euphony"]},
+  {root:"port",meaning:"carry",origin:"Latin",examples:["transport","import","portable"]},
+  {root:"psych",meaning:"mind, soul",origin:"Greek",examples:["psychology","psychosis","psyche"]},
+  {root:"rupt",meaning:"break",origin:"Latin",examples:["rupture","interrupt","erupt"]},
+  {root:"scrib",meaning:"write",origin:"Latin",examples:["prescribe","manuscript","scribble"]},
+  {root:"sect",meaning:"cut",origin:"Latin",examples:["section","dissect","bisect"]},
+  {root:"sens",meaning:"feel",origin:"Latin",examples:["sensor","sensible","sensitive"]},
+  {root:"spec",meaning:"see, look",origin:"Latin",examples:["inspect","spectacle","specimen"]},
+  {root:"struct",meaning:"build",origin:"Latin",examples:["structure","construct","instruct"]},
+  {root:"terr",meaning:"earth, land",origin:"Latin",examples:["terrain","territory","terrestrial"]},
+  {root:"therm",meaning:"heat",origin:"Greek",examples:["thermometer","thermal","geothermal"]},
+  {root:"vac",meaning:"empty",origin:"Latin",examples:["vacuum","vacuity","evacuate"]},
+  {root:"ven",meaning:"come",origin:"Latin",examples:["adventure","convention","prevent"]},
+  {root:"vid",meaning:"see",origin:"Latin",examples:["video","evidence","provide"]},
+  {root:"vit",meaning:"life",origin:"Latin",examples:["viticulture","vital","vitamin"]},
+  {root:"voc",meaning:"voice, call",origin:"Latin",examples:["vocal","advocate","vocabulary"]}
+];
+
 // Practice test data from pronouncer keys
 const PRACTICE_TESTS = {
   "meet1": {

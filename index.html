@@ -240,6 +240,7 @@
         <button class="ref-tab-btn active" data-reftab="prefixes">Prefixes</button>
         <button class="ref-tab-btn" data-reftab="suffixes">Suffixes</button>
         <button class="ref-tab-btn" data-reftab="roots">Spelling Rules</button>
+        <button class="ref-tab-btn" data-reftab="wordroots">Word Roots</button>
       </div>
       <div class="ref-search">
         <input type="text" id="refSearch" placeholder="Search prefixes/suffixes...">
@@ -293,6 +294,18 @@
           <p class="rule-examples"><strong>Umlaut (&#x00FC;)</strong>: modified vowel - <em>na&iuml;ve</em></p>
           <p class="rule-exceptions">Note: Improper use of accent marks or omitting them is considered a spelling error in UIL competition.</p>
         </div>
+      </div>
+      <div id="ref-wordroots" class="ref-content">
+        <div class="root-analyzer">
+          <h3>Analyze a Word</h3>
+          <div class="root-search-box">
+            <input type="text" id="rootWordInput" placeholder="Type a word to break down..." autocomplete="off">
+            <button class="btn btn-primary" id="rootAnalyzeBtn">Analyze</button>
+          </div>
+          <div id="rootBreakdownResult"></div>
+        </div>
+        <h3 style="margin-top:24px;margin-bottom:12px;">Common Roots Reference</h3>
+        <div id="rootsGrid" class="ref-grid"></div>
       </div>
     </section>
 

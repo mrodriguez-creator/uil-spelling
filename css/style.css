@@ -762,6 +762,80 @@ main {
 .rule-examples em { color: var(--primary); font-style: normal; font-weight: 600; }
 .rule-exceptions { color: var(--accent); font-size: 13px; }
 
+/* Word Root Breakdown */
+.root-analyzer {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+.root-analyzer h3 { color: var(--primary); margin-bottom: 12px; }
+.root-search-box {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.root-search-box input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-family: inherit;
+}
+.root-search-box input:focus { outline: none; border-color: var(--primary-light); }
+.root-word-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary);
+  text-align: center;
+  margin-bottom: 16px;
+}
+.root-segments {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.root-segment {
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  text-align: center;
+  min-width: 80px;
+}
+.segment-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.segment-text { font-size: 20px; font-weight: 700; }
+.segment-meaning { font-size: 12px; margin-top: 4px; opacity: 0.8; }
+.root-segment-prefix { background: #f3e8ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+.root-segment-root { background: #dbeafe; color: var(--primary); border: 1px solid #bfdbfe; }
+.root-segment-suffix { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+.root-connector { font-size: 24px; font-weight: 700; color: var(--text-light); }
+.root-breakdown-empty {
+  padding: 16px;
+  color: var(--text-light);
+  text-align: center;
+  font-size: 14px;
+}
+.root-matches { margin-top: 12px; font-size: 13px; text-align: center; }
+.root-match-tag {
+  display: inline-block;
+  background: #dbeafe;
+  color: var(--primary);
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  margin: 2px;
+}
+.root-ref-item em { color: var(--text-light); font-style: italic; }
+
 /* Audio Test Setup */
 .audio-test-setup { text-align: center; padding: 40px 20px; }
 .audio-test-setup h2 { font-size: 28px; margin-bottom: 8px; }
