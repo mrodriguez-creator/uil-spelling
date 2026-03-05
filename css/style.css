@@ -1208,6 +1208,306 @@ footer {
   color: var(--primary);
 }
 
+/* ==================== DRILLS TAB ==================== */
+.drills-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.drill-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.drill-section h3 {
+  margin: 0 0 8px;
+  color: var(--primary);
+}
+.drill-section p {
+  margin: 0 0 12px;
+  color: var(--text-light);
+  font-size: 14px;
+}
+.drill-section label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 12px;
+  font-size: 14px;
+}
+
+/* Speed Round */
+.speed-timer-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.speed-timer-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.speed-timer-fill {
+  height: 100%;
+  width: 100%;
+  background: var(--success);
+  border-radius: 4px;
+  transition: width 1s linear;
+}
+.speed-timer-fill.speed-timer-warning { background: var(--warning); }
+.speed-timer-fill.speed-timer-danger { background: var(--error); animation: pulse 0.5s infinite alternate; }
+.speed-timer-text {
+  font-size: 24px;
+  font-weight: 700;
+  min-width: 36px;
+  text-align: right;
+}
+.speed-score-display {
+  text-align: center;
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+.speed-flash {
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: border-color 0.2s;
+}
+.speed-flash-correct { border-color: var(--success); background: #f0fdf4; }
+.speed-flash-wrong { border-color: var(--error); background: #fef2f2; }
+.speed-def {
+  font-size: 15px;
+  margin-bottom: 12px;
+  min-height: 40px;
+}
+.speed-input-area input {
+  width: 100%;
+  padding: 12px;
+  font-size: 18px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+}
+.speed-final {
+  text-align: center;
+  padding: 20px;
+}
+.speed-final-score {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--primary);
+}
+.speed-final-detail {
+  font-size: 14px;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+.speed-new-record {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 12px;
+  background: var(--warning);
+  color: #000;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* Accent Mark Drill */
+.accent-hint {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-bottom: 12px;
+  font-style: italic;
+}
+.accent-input-area {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.accent-input-area input {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+}
+.accent-helper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.accent-helper-label {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-right: 4px;
+}
+.accent-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--card);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.accent-btn:hover {
+  background: var(--bg);
+  border-color: var(--primary-light);
+}
+
+/* Pattern Drill */
+.pattern-tip {
+  font-size: 12px;
+  color: var(--primary);
+  font-weight: 500;
+  margin-bottom: 10px;
+  padding: 4px 8px;
+  background: #dbeafe;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+/* ==================== PROGRESS DASHBOARD ==================== */
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.dash-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.dash-card h3 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  text-transform: uppercase;
+  color: var(--text-light);
+  letter-spacing: 0.5px;
+}
+.dash-card-wide {
+  grid-column: 1 / -1;
+}
+.dash-mastery {
+  text-align: center;
+}
+.dash-mastery-pct {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--primary);
+}
+.dash-bar-wrap {
+  height: 10px;
+  background: var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+.dash-bar {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.5s ease;
+}
+.dash-bar-mastery { background: var(--primary); }
+.dash-bar-accuracy { background: var(--success); }
+.dash-mastery-label, .dash-accuracy-detail {
+  font-size: 13px;
+  color: var(--text-light);
+}
+.dash-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.dash-stat {
+  text-align: center;
+}
+.dash-stat-num {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+}
+.dash-stat-label {
+  font-size: 12px;
+  color: var(--text-light);
+}
+.dash-stat-mastered { color: #7c3aed; }
+.dash-stat-studied { color: var(--primary); }
+.dash-stat-unstudied { color: var(--text-light); }
+.dash-stat-missed { color: var(--error); }
+
+/* Weakest Words */
+.dash-weak-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.dash-weak-item:last-child { border-bottom: none; }
+.dash-weak-word {
+  min-width: 120px;
+  font-weight: 500;
+}
+.dash-weak-bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.dash-weak-bar {
+  height: 100%;
+  background: var(--error);
+  border-radius: 3px;
+}
+.dash-weak-pct {
+  font-size: 12px;
+  color: var(--text-light);
+  min-width: 70px;
+  text-align: right;
+}
+.dash-empty {
+  color: var(--text-light);
+  font-style: italic;
+  padding: 12px 0;
+}
+
+/* Recommendations */
+.dash-rec-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.dash-rec-item:last-child { border-bottom: none; }
+.dash-rec-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .header-content { padding: 10px 16px; }
@@ -1220,7 +1520,9 @@ footer {
   .flashcard-word { font-size: 28px; }
   .quiz-options { grid-template-columns: 1fr; }
   .proof-group { grid-template-columns: repeat(3, 1fr); }
-  .nav-btn { padding: 10px 12px; font-size: 12px; }
+  .nav-btn { padding: 8px 10px; font-size: 11px; }
+  .dash-grid { grid-template-columns: 1fr; }
+  .dash-card-wide { grid-column: 1; }
   .practice-options { flex-direction: column; align-items: center; }
   .audio-word-count-btns { flex-direction: column; }
   .audio-test-card { padding: 24px 16px; }

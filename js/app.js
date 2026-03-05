@@ -24,6 +24,10 @@
     App.setupQuiz();
     App.setupReference();
     App.setupAudioTest();
+    App.setupDashboard();
+    App.setupSpeedRound();
+    App.setupAccentDrill();
+    App.setupPatternDrill();
     App.updateProgress();
   }
 

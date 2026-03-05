@@ -27,8 +27,10 @@
       <button class="nav-btn" data-tab="study">Study Cards</button>
       <button class="nav-btn" data-tab="practice">Spelling Practice</button>
       <button class="nav-btn" data-tab="quiz">Quiz Mode</button>
-      <button class="nav-btn" data-tab="reference">Prefix/Suffix Guide</button>
+      <button class="nav-btn" data-tab="drills">Drills</button>
+      <button class="nav-btn" data-tab="reference">Reference</button>
       <button class="nav-btn" data-tab="audio">Audio Tests</button>
+      <button class="nav-btn" data-tab="dashboard">Progress</button>
     </nav>
   </header>
 
@@ -393,6 +395,192 @@
         </div>
       </div>
     </section>
+
+    <!-- DRILLS TAB -->
+    <section id="tab-drills" class="tab-content">
+      <h2>Targeted Drills</h2>
+      <p class="ref-intro">Focused practice on the trickiest aspects of UIL Spelling.</p>
+      <div class="drills-grid">
+        <!-- SPEED ROUND -->
+        <div class="drill-section">
+          <h3>Speed Round</h3>
+          <p>Type as many words correctly as you can in 60 seconds.</p>
+          <div class="speed-setup" id="speedSetup">
+            <label>Word source:
+              <select id="speedSource">
+                <option value="all">All Words</option>
+                <option value="vocab">Vocabulary Words</option>
+                <option value="missed">Missed Words</option>
+                <option value="accented">Accented Words</option>
+              </select>
+            </label>
+            <button class="btn btn-primary" id="speedStart">Start Speed Round</button>
+          </div>
+          <div class="speed-active hidden" id="speedActive">
+            <div class="speed-timer-wrap">
+              <div class="speed-timer-bar-bg"><div class="speed-timer-fill" id="speedTimerBar"></div></div>
+              <span class="speed-timer-text" id="speedTimerText">60</span>s
+            </div>
+            <div class="speed-score-display">Score: <strong id="speedScore">0</strong></div>
+            <div class="speed-flash" id="speedFlash">
+              <div class="speed-def" id="speedDef"></div>
+              <div class="speed-input-area">
+                <input type="text" id="speedInput" placeholder="Type and press Enter..." autocomplete="off" autocapitalize="off" spellcheck="false">
+              </div>
+            </div>
+          </div>
+          <div class="speed-results hidden" id="speedResults">
+            <div class="speed-final">
+              <div class="speed-final-score"><span id="speedFinalScore">0</span> correct</div>
+              <div class="speed-final-detail"><span id="speedFinalTotal">0</span> attempted &middot; <span id="speedFinalAccuracy">0%</span> accuracy</div>
+              <div class="speed-final-detail">Personal best: <strong id="speedBestScore">0</strong></div>
+              <div class="speed-new-record hidden" id="speedNewRecord">New Record!</div>
+            </div>
+            <div class="results-list" id="speedResultsList"></div>
+            <button class="btn btn-primary" id="speedRestart">Try Again</button>
+          </div>
+        </div>
+
+        <!-- ACCENT MARK DRILL -->
+        <div class="drill-section">
+          <h3>Accent Mark Drill</h3>
+          <p><span id="accentWordCount">0</span> words require accent marks. Missing or wrong accents = wrong answer in UIL.</p>
+          <div class="accent-setup" id="accentSetup">
+            <button class="btn btn-primary" id="accentStart">Start Accent Drill</button>
+          </div>
+          <div class="accent-active hidden" id="accentActive">
+            <div class="practice-header">
+              <div class="practice-progress">
+                <span>Word <span id="accentNum">1</span> of <span id="accentTotal">0</span></span>
+                <div class="progress-bar"><div class="progress-fill" id="accentProgressBar"></div></div>
+              </div>
+              <div class="practice-score">Score: <span id="accentScore">0</span></div>
+            </div>
+            <div class="practice-card">
+              <div class="practice-def" id="accentDef"></div>
+              <div class="accent-hint" id="accentHint"></div>
+              <div class="accent-input-area">
+                <input type="text" id="accentInput" placeholder="Type with correct accents..." autocomplete="off" autocapitalize="off" spellcheck="false">
+                <button class="btn btn-primary" id="accentSubmit">Check</button>
+              </div>
+              <div class="accent-helper" id="accentHelperBtns">
+                <span class="accent-helper-label">Insert accent:</span>
+                <button type="button" class="accent-btn" data-char="&#xe9;" title="acute e">&#xe9;</button>
+                <button type="button" class="accent-btn" data-char="&#xe8;" title="grave e">&#xe8;</button>
+                <button type="button" class="accent-btn" data-char="&#xea;" title="circumflex e">&#xea;</button>
+                <button type="button" class="accent-btn" data-char="&#xeb;" title="diaeresis e">&#xeb;</button>
+                <button type="button" class="accent-btn" data-char="&#xe1;" title="acute a">&#xe1;</button>
+                <button type="button" class="accent-btn" data-char="&#xe0;" title="grave a">&#xe0;</button>
+                <button type="button" class="accent-btn" data-char="&#xe2;" title="circumflex a">&#xe2;</button>
+                <button type="button" class="accent-btn" data-char="&#xe4;" title="diaeresis a">&#xe4;</button>
+                <button type="button" class="accent-btn" data-char="&#xe7;" title="cedilla">&#xe7;</button>
+                <button type="button" class="accent-btn" data-char="&#xf1;" title="tilde n">&#xf1;</button>
+                <button type="button" class="accent-btn" data-char="&#xf6;" title="diaeresis o">&#xf6;</button>
+                <button type="button" class="accent-btn" data-char="&#xf4;" title="circumflex o">&#xf4;</button>
+                <button type="button" class="accent-btn" data-char="&#xfc;" title="diaeresis u">&#xfc;</button>
+                <button type="button" class="accent-btn" data-char="&#xfb;" title="circumflex u">&#xfb;</button>
+                <button type="button" class="accent-btn" data-char="&#xee;" title="circumflex i">&#xee;</button>
+                <button type="button" class="accent-btn" data-char="&#xef;" title="diaeresis i">&#xef;</button>
+                <button type="button" class="accent-btn" data-char="&#x153;" title="oe ligature">&#x153;</button>
+              </div>
+              <div class="practice-feedback hidden" id="accentFeedback"></div>
+              <button class="btn btn-primary hidden" id="accentNext">Next Word</button>
+            </div>
+          </div>
+          <div class="accent-results hidden" id="accentResults">
+            <h3>Accent Drill Complete!</h3>
+            <div class="results-score" id="accentResultsScore"></div>
+            <div class="results-list" id="accentResultsList"></div>
+            <button class="btn btn-primary" id="accentRestart">Try Again</button>
+          </div>
+        </div>
+
+        <!-- PATTERN DRILL -->
+        <div class="drill-section">
+          <h3>Difficult Patterns Drill</h3>
+          <p>Practice words grouped by tricky spelling patterns.</p>
+          <div class="pattern-setup" id="patternSetup">
+            <label>Pattern:
+              <select id="patternSelector"></select>
+            </label>
+            <label>Words:
+              <select id="patternCount">
+                <option value="10">10 words</option>
+                <option value="20" selected>20 words</option>
+                <option value="30">30 words</option>
+                <option value="50">All available</option>
+              </select>
+            </label>
+            <button class="btn btn-primary" id="patternStart">Start Pattern Drill</button>
+          </div>
+          <div class="pattern-active hidden" id="patternActive">
+            <div class="practice-header">
+              <div class="practice-progress">
+                <span><span id="patternName"></span>: Word <span id="patternNum">1</span> of <span id="patternTotal">0</span></span>
+                <div class="progress-bar"><div class="progress-fill" id="patternProgressBar"></div></div>
+              </div>
+              <div class="practice-score">Score: <span id="patternScore">0</span></div>
+            </div>
+            <div class="practice-card">
+              <div class="practice-def" id="patternDef"></div>
+              <div class="pattern-tip" id="patternTip"></div>
+              <div class="practice-input-area">
+                <input type="text" id="patternInput" placeholder="Type the word..." autocomplete="off" autocapitalize="off" spellcheck="false">
+                <button class="btn btn-primary" id="patternSubmit">Check</button>
+              </div>
+              <div class="practice-feedback hidden" id="patternFeedback"></div>
+              <button class="btn btn-primary hidden" id="patternNext">Next Word</button>
+            </div>
+          </div>
+          <div class="pattern-results hidden" id="patternResults">
+            <h3>Pattern Drill Complete!</h3>
+            <div class="results-score" id="patternResultsScore"></div>
+            <div class="results-list" id="patternResultsList"></div>
+            <button class="btn btn-primary" id="patternRestart">Try Again</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROGRESS DASHBOARD TAB -->
+    <section id="tab-dashboard" class="tab-content">
+      <h2>Progress Dashboard</h2>
+      <div class="dash-grid">
+        <div class="dash-card dash-card-wide">
+          <h3>Overall Mastery</h3>
+          <div class="dash-mastery">
+            <div class="dash-mastery-pct" id="dashMasteryPct">0%</div>
+            <div class="dash-bar-wrap"><div class="dash-bar dash-bar-mastery" id="dashMasteryBar"></div></div>
+            <div class="dash-mastery-label" id="dashMasteryLabel">0 of 0 words studied</div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <h3>Word Status</h3>
+          <div class="dash-stats">
+            <div class="dash-stat"><span class="dash-stat-num dash-stat-mastered" id="dashMastered">0</span><span class="dash-stat-label">Mastered</span></div>
+            <div class="dash-stat"><span class="dash-stat-num dash-stat-studied" id="dashStudied">0</span><span class="dash-stat-label">Studied</span></div>
+            <div class="dash-stat"><span class="dash-stat-num dash-stat-unstudied" id="dashUnstudied">0</span><span class="dash-stat-label">Unstudied</span></div>
+            <div class="dash-stat"><span class="dash-stat-num dash-stat-missed" id="dashMissed">0</span><span class="dash-stat-label">Missed</span></div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <h3>Accuracy</h3>
+          <div class="dash-mastery">
+            <div class="dash-mastery-pct" id="dashAccuracyPct">0%</div>
+            <div class="dash-bar-wrap"><div class="dash-bar dash-bar-accuracy" id="dashAccuracyBar"></div></div>
+            <div class="dash-accuracy-detail"><span id="dashAttempted">0</span> words attempted &middot; <span id="dashTotalAttempts">0</span> total tries</div>
+          </div>
+        </div>
+        <div class="dash-card dash-card-wide">
+          <h3>Weakest Words</h3>
+          <div id="dashWeakest"></div>
+        </div>
+        <div class="dash-card dash-card-wide">
+          <h3>Study Recommendations</h3>
+          <div id="dashRecommendations"></div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer>
@@ -408,12 +596,15 @@
   <script src="js/word-origins.js"></script>
   <script src="js/confused-pairs.js"></script>
   <!-- Feature modules -->
+  <script src="js/accent-patterns.js"></script>
   <script src="js/explorer.js"></script>
   <script src="js/study.js"></script>
   <script src="js/practice.js"></script>
   <script src="js/quiz.js"></script>
   <script src="js/reference.js"></script>
   <script src="js/audio-test.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/speed-round.js"></script>
   <!-- Entry point -->
   <script src="js/app.js"></script>
 </body>

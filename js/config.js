@@ -45,6 +45,15 @@ var CONFIG = {
   STORAGE_MISSED: 'uil-missed',
   STORAGE_ACCURACY: 'uil-accuracy',
 
+  // ==================== SPEED ROUNDS ====================
+  SPEED_ROUND_SECONDS: 60,           // Duration of speed round
+
+  // ==================== PATTERN DRILL ====================
+  PATTERN_DEFAULT_COUNT: 20,         // Default words per pattern drill
+
+  // ==================== LOCAL STORAGE KEYS (continued) ====================
+  STORAGE_SPEED_BEST: 'uil-speed-best',
+
   // ==================== ID OFFSET RANGES ====================
   // Used when creating word objects from practice test data
   PRACTICE_ID_OFFSET: 1000,
