@@ -1157,6 +1157,57 @@ footer {
 .proof-word.correct-answer { border-color: var(--success); background: #f0fdf4; }
 .proof-word.wrong-answer { border-color: var(--error); background: #fef2f2; }
 
+/* Confused Pairs */
+.confused-pair-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.confused-pair-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.confused-word {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+}
+.confused-vs {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+}
+.confused-pair-hint {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-light);
+  font-style: italic;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.confused-pair-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.confused-sentence {
+  font-size: 14px;
+  color: var(--text);
+  padding: 6px 10px;
+  background: var(--bg);
+  border-radius: 4px;
+}
+.confused-sentence strong {
+  color: var(--primary);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .header-content { padding: 10px 16px; }

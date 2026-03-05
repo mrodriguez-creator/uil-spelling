@@ -30,6 +30,7 @@ App.startQuiz = function(type) {
     case 'vocabulary': App.generateVocabularyQuiz(); break;
     case 'definition': App.generateDefinitionQuiz(); break;
     case 'fulltest': App.generateFullTest(); break;
+    case 'confused': App.generateConfusedPairsQuiz(); break;
   }
 
   document.getElementById('quizSetup').classList.add('hidden');
@@ -253,6 +254,15 @@ App.showQuizQuestion = function() {
       btn.addEventListener('click', function() { App.handleVocabAnswer(i, q, optionsEl); });
       optionsEl.appendChild(btn);
     });
+  } else if (q.type === 'confused') {
+    questionEl.innerHTML = 'Choose the correct word to complete the sentence:<br><em>' + App.escapeHtml(q.sentence) + '</em>';
+    q.options.forEach(function(opt, i) {
+      var btn = document.createElement('button');
+      btn.className = 'quiz-option';
+      btn.textContent = opt;
+      btn.addEventListener('click', function() { App.handleConfusedAnswer(i, q, optionsEl); });
+      optionsEl.appendChild(btn);
+    });
   }
 };
 
@@ -472,4 +482,52 @@ App.showQuizResults = function() {
       (r.answer && !r.correct ? '<span class="result-answer">You typed: ' + App.escapeHtml(r.answer) + '</span>' : '') +
       '</div>';
   }).join('');
+};
+
+// ==================== CONFUSED PAIRS QUIZ ====================
+App.generateConfusedPairsQuiz = function() {
+  var questions = [];
+  CONFUSED_PAIRS.forEach(function(pair) {
+    pair.sentences.forEach(function(s) {
+      questions.push({
+        type: 'confused',
+        sentence: s.text,
+        answer: s.answer,
+        options: pair.words.slice(),
+        hint: pair.hint
+      });
+    });
+  });
+  App.shuffleArray(questions);
+  App.state.quizQuestions = questions.slice(0, CONFIG.QUIZ_QUESTION_COUNT);
+};
+
+App.handleConfusedAnswer = function(selectedIdx, q, container) {
+  var buttons = container.querySelectorAll('.quiz-option');
+  buttons.forEach(function(b) { b.style.pointerEvents = 'none'; });
+
+  var feedback = document.getElementById('quizFeedback');
+  feedback.classList.remove('hidden', 'correct', 'incorrect');
+
+  var selectedWord = q.options[selectedIdx];
+  var correct = selectedWord === q.answer;
+  var correctIdx = q.options.indexOf(q.answer);
+
+  if (correct) {
+    App.state.quizScore++;
+    document.getElementById('quizScore').textContent = App.state.quizScore;
+    buttons[selectedIdx].classList.add('correct-answer');
+    feedback.classList.add('correct');
+    feedback.innerHTML = '\u2713 Correct! <span style="font-size:12px;display:block;margin-top:4px;font-weight:400;">' + App.escapeHtml(q.hint) + '</span>';
+  } else {
+    buttons[selectedIdx].classList.add('wrong-answer');
+    buttons[correctIdx].classList.add('correct-answer');
+    feedback.classList.add('incorrect');
+    feedback.innerHTML = '\u2717 The answer is "' + App.escapeHtml(q.answer) + '". <span style="font-size:12px;display:block;margin-top:4px;font-weight:400;">' + App.escapeHtml(q.hint) + '</span>';
+    App.recordMiss(q.answer, 'quiz');
+  }
+  App.recordAccuracy(q.answer, correct);
+
+  App.state.quizResults.push({ correct: correct, word: q.answer });
+  document.getElementById('quizNext').classList.remove('hidden');
 };

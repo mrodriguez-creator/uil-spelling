@@ -33,6 +33,9 @@ App.setupReference = function() {
 
   // Word Roots tab
   App.setupWordRoots();
+
+  // Confused Pairs tab
+  App.setupConfusedPairs();
 };
 
 App.setupWordRoots = function() {
@@ -112,4 +115,24 @@ App.showRootBreakdown = function(word) {
   }
 
   container.innerHTML = '<div class="root-word-title">' + App.escapeHtml(word) + '</div><div class="root-segments">' + segments.join('') + '</div>';
+};
+
+App.setupConfusedPairs = function() {
+  var grid = document.getElementById('confusedPairsGrid');
+  grid.innerHTML = CONFUSED_PAIRS.map(function(pair) {
+    var wordsHtml = pair.words.map(function(w) {
+      return '<span class="confused-word">' + App.escapeHtml(w) + '</span>';
+    }).join('<span class="confused-vs">vs</span>');
+
+    var sentencesHtml = pair.sentences.map(function(s) {
+      var filled = s.text.replace('_____', '<strong>' + App.escapeHtml(s.answer) + '</strong>');
+      return '<div class="confused-sentence">' + filled + '</div>';
+    }).join('');
+
+    return '<div class="confused-pair-card">' +
+      '<div class="confused-pair-header">' + wordsHtml + '</div>' +
+      '<div class="confused-pair-hint">' + App.escapeHtml(pair.hint) + '</div>' +
+      '<div class="confused-pair-examples">' + sentencesHtml + '</div>' +
+      '</div>';
+  }).join('');
 };

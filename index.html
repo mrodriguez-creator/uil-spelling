@@ -204,6 +204,10 @@
             <h3>Definition</h3>
             <p>Match words with their correct definitions.</p>
           </div>
+          <div class="quiz-type-card" data-quiz="confused">
+            <h3>Confused Pairs</h3>
+            <p>Choose the correct word from commonly confused look-alike pairs.</p>
+          </div>
         </div>
       </div>
       <div class="quiz-active hidden" id="quizActive">
@@ -242,6 +246,7 @@
         <button class="ref-tab-btn" data-reftab="suffixes">Suffixes</button>
         <button class="ref-tab-btn" data-reftab="roots">Spelling Rules</button>
         <button class="ref-tab-btn" data-reftab="wordroots">Word Roots</button>
+        <button class="ref-tab-btn" data-reftab="confused">Confused Pairs</button>
       </div>
       <div class="ref-search">
         <input type="text" id="refSearch" placeholder="Search prefixes/suffixes...">
@@ -295,6 +300,9 @@
           <p class="rule-examples"><strong>Umlaut (&#x00FC;)</strong>: modified vowel - <em>na&iuml;ve</em></p>
           <p class="rule-exceptions">Note: Improper use of accent marks or omitting them is considered a spelling error in UIL competition.</p>
         </div>
+      </div>
+      <div id="ref-confused" class="ref-content">
+        <div id="confusedPairsGrid"></div>
       </div>
       <div id="ref-wordroots" class="ref-content">
         <div class="root-analyzer">
@@ -398,6 +406,7 @@
   <script src="js/config.js"></script>
   <script src="js/state.js"></script>
   <script src="js/word-origins.js"></script>
+  <script src="js/confused-pairs.js"></script>
   <!-- Feature modules -->
   <script src="js/explorer.js"></script>
   <script src="js/study.js"></script>
