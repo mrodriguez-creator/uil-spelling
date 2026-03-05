@@ -113,6 +113,11 @@ App.buildCardDetails = function(w, def, analysis) {
     analysis.suffixes.forEach(function(s) { parts += '<strong>' + App.escapeHtml(s.suffix) + '</strong> (' + App.escapeHtml(s.meaning) + ') '; });
     details += '<div class="detail-row"><div class="detail-label">Word Parts</div>' + parts + '</div>';
   }
+  var origin = App.getWordOrigin(w.word);
+  if (origin) {
+    var oc = App.getOriginColor(origin);
+    details += '<div class="detail-row"><div class="detail-label">Origin</div><span class="origin-badge" style="background:' + oc.bg + ';color:' + oc.color + ';border-color:' + oc.border + '">' + App.escapeHtml(origin) + '</span></div>';
+  }
   details += '<div class="detail-row"><div class="detail-label">Letters</div>' + w.word.length + ' characters, ~' + App.countSyllables(w.word) + ' syllable(s)</div>';
 
   document.getElementById('flashcardDetails').innerHTML = details;

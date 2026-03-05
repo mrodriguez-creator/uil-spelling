@@ -270,6 +270,17 @@ main {
   margin-bottom: 16px;
 }
 .miss-badge.hidden { display: none; }
+.origin-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid;
+  margin-left: 6px;
+  margin-bottom: 16px;
+}
+.origin-badge.hidden { display: none; }
 .modal-section {
   margin-top: 18px;
   padding-top: 18px;

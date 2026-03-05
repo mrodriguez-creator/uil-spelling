@@ -110,6 +110,19 @@ App.openModal = function(wordObj) {
     missBadge.classList.add('hidden');
   }
 
+  var originBadge = document.getElementById('modalOriginBadge');
+  var origin = App.getWordOrigin(wordObj.word);
+  if (origin) {
+    var oc = App.getOriginColor(origin);
+    originBadge.textContent = origin;
+    originBadge.style.background = oc.bg;
+    originBadge.style.color = oc.color;
+    originBadge.style.borderColor = oc.border;
+    originBadge.classList.remove('hidden');
+  } else {
+    originBadge.classList.add('hidden');
+  }
+
   var defEl = document.getElementById('modalDef');
   var cached = App.findDefinition(wordObj);
   if (cached) {
