@@ -11,6 +11,8 @@ App.setupQuiz = function() {
     if (e.key === 'Enter') App.submitQuizAnswer();
   });
   document.getElementById('restartQuiz').addEventListener('click', function() {
+    App.stopQuizTimer();
+    App.state.fullTestMode = false;
     document.getElementById('quizResults').classList.add('hidden');
     document.getElementById('quizSetup').classList.remove('hidden');
   });
@@ -21,17 +23,31 @@ App.startQuiz = function(type) {
   App.state.quizIndex = 0;
   App.state.quizScore = 0;
   App.state.quizResults = [];
+  App.state.fullTestMode = (type === 'fulltest');
 
   switch (type) {
     case 'proofreading': App.generateProofreadingQuiz(); break;
     case 'vocabulary': App.generateVocabularyQuiz(); break;
     case 'definition': App.generateDefinitionQuiz(); break;
+    case 'fulltest': App.generateFullTest(); break;
   }
 
   document.getElementById('quizSetup').classList.add('hidden');
   document.getElementById('quizActive').classList.remove('hidden');
   document.getElementById('quizTotal').textContent = App.state.quizQuestions.length;
   document.getElementById('quizScore').textContent = '0';
+
+  // Show/hide timer and part label for full test
+  var timerEl = document.getElementById('quizTimer');
+  var partLabel = document.getElementById('quizPartLabel');
+  if (App.state.fullTestMode) {
+    timerEl.classList.remove('hidden');
+    partLabel.classList.remove('hidden');
+    App.startQuizTimer();
+  } else {
+    timerEl.classList.add('hidden');
+    partLabel.classList.add('hidden');
+  }
 
   App.showQuizQuestion();
 };
@@ -116,11 +132,89 @@ App.generateVocabularyQuiz = function() {
   });
 };
 
+// ==================== FULL PRACTICE TEST ====================
+App.generateFullTest = function() {
+  // Part I: Proofreading (15 questions)
+  var proofPool = App.shuffleArray(App.state.words.slice()).slice(0, CONFIG.FULL_TEST_PROOFREAD_COUNT * CONFIG.QUIZ_WORDS_PER_GROUP);
+  var proofQuestions = [];
+  for (var i = 0; i < CONFIG.FULL_TEST_PROOFREAD_COUNT && i * CONFIG.QUIZ_WORDS_PER_GROUP < proofPool.length; i++) {
+    var group = proofPool.slice(i * CONFIG.QUIZ_WORDS_PER_GROUP, i * CONFIG.QUIZ_WORDS_PER_GROUP + CONFIG.QUIZ_WORDS_PER_GROUP);
+    var misspellIdx = Math.floor(Math.random() * CONFIG.QUIZ_WORDS_PER_GROUP);
+    var original = group[misspellIdx].word;
+    var misspelled = App.createMisspelling(original);
+    proofQuestions.push({
+      type: 'proofreading',
+      part: 1,
+      words: group.map(function(w, j) { return j === misspellIdx ? misspelled : w.word; }),
+      correctIndex: misspellIdx,
+      correctSpelling: original,
+      misspelled: misspelled
+    });
+  }
+
+  // Part II: Vocabulary (15 questions)
+  var vocabPool = App.shuffleArray(VOCAB_QUESTIONS.slice());
+  var vocabQuestions = vocabPool.slice(0, CONFIG.FULL_TEST_VOCAB_COUNT).map(function(q) {
+    return {
+      type: 'vocabulary',
+      part: 2,
+      sentence: q.sentence,
+      options: q.options.slice(),
+      answer: q.answer
+    };
+  });
+
+  App.state.quizQuestions = proofQuestions.concat(vocabQuestions);
+};
+
+// ==================== TIMER ====================
+App.startQuizTimer = function() {
+  App.state.quizTimeLeft = CONFIG.FULL_TEST_TIME_SECONDS;
+  App.updateTimerDisplay();
+  App.state.quizTimer = setInterval(function() {
+    App.state.quizTimeLeft--;
+    App.updateTimerDisplay();
+    if (App.state.quizTimeLeft <= 0) {
+      App.stopQuizTimer();
+      App.showQuizResults();
+    }
+  }, 1000);
+};
+
+App.stopQuizTimer = function() {
+  if (App.state.quizTimer) {
+    clearInterval(App.state.quizTimer);
+    App.state.quizTimer = null;
+  }
+};
+
+App.updateTimerDisplay = function() {
+  var mins = Math.floor(App.state.quizTimeLeft / 60);
+  var secs = App.state.quizTimeLeft % 60;
+  var timerEl = document.getElementById('quizTimerText');
+  timerEl.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+
+  var timerContainer = document.getElementById('quizTimer');
+  timerContainer.classList.remove('timer-warning', 'timer-danger');
+  if (App.state.quizTimeLeft <= 60) {
+    timerContainer.classList.add('timer-danger');
+  } else if (App.state.quizTimeLeft <= 180) {
+    timerContainer.classList.add('timer-warning');
+  }
+};
+
 App.showQuizQuestion = function() {
   var q = App.state.quizQuestions[App.state.quizIndex];
   document.getElementById('quizNum').textContent = App.state.quizIndex + 1;
   document.getElementById('quizFeedback').classList.add('hidden');
   document.getElementById('quizNext').classList.add('hidden');
+
+  // Update part label for full test
+  if (App.state.fullTestMode && q.part) {
+    var partLabel = document.getElementById('quizPartLabel');
+    partLabel.textContent = q.part === 1 ? 'Part I: Proofreading' : 'Part II: Vocabulary';
+    partLabel.className = 'quiz-part-label' + (q.part === 2 ? ' part-two' : '');
+  }
 
   var questionEl = document.getElementById('quizQuestion');
   var optionsEl = document.getElementById('quizOptions');
@@ -197,7 +291,7 @@ App.handleProofAnswer = function(selectedIdx, q, grid) {
         feedback.classList.add('incorrect');
         feedback.innerHTML = '\u2717 Not quite. The correct spelling is: <strong>' + App.escapeHtml(q.correctSpelling) + '</strong>';
       }
-      App.state.quizResults.push({ correct: typed.toLowerCase() === q.correctSpelling.toLowerCase(), word: q.correctSpelling, answer: typed });
+      App.state.quizResults.push({ correct: typed.toLowerCase() === q.correctSpelling.toLowerCase(), word: q.correctSpelling, answer: typed, part: q.part });
       document.getElementById('quizNext').classList.remove('hidden');
     };
 
@@ -229,7 +323,7 @@ App.handleProofAnswer = function(selectedIdx, q, grid) {
       } else {
         feedback.innerHTML = '\u2717 Incorrect. The correct spelling is: <strong>' + App.escapeHtml(q.correctSpelling) + '</strong>';
       }
-      App.state.quizResults.push({ correct: false, word: q.correctSpelling, answer: typed });
+      App.state.quizResults.push({ correct: false, word: q.correctSpelling, answer: typed, part: q.part });
       document.getElementById('quizNext').classList.remove('hidden');
     };
 
@@ -287,7 +381,7 @@ App.handleDefAnswer = function(selectedIdx, q, container) {
     feedback.textContent = '\u2717 Incorrect. The correct definition is: "' + q.correctDef + '"';
   }
 
-  App.state.quizResults.push({ correct: correct, word: q.word });
+  App.state.quizResults.push({ correct: correct, word: q.word, part: q.part });
   document.getElementById('quizNext').classList.remove('hidden');
 };
 
@@ -315,7 +409,7 @@ App.handleVocabAnswer = function(selectedIdx, q, container) {
     feedback.textContent = '\u2717 Incorrect. The answer is "' + q.answer + '".';
   }
 
-  App.state.quizResults.push({ correct: correct, word: q.answer });
+  App.state.quizResults.push({ correct: correct, word: q.answer, part: q.part });
   document.getElementById('quizNext').classList.remove('hidden');
 };
 
@@ -332,12 +426,33 @@ App.nextQuizQuestion = function() {
 };
 
 App.showQuizResults = function() {
+  App.stopQuizTimer();
   document.getElementById('quizActive').classList.add('hidden');
   document.getElementById('quizResults').classList.remove('hidden');
 
   var total = App.state.quizResults.length;
   var pct = total > 0 ? Math.round(App.state.quizScore / total * 100) : 0;
   document.getElementById('quizResultsScore').textContent = App.state.quizScore + '/' + total + ' (' + pct + '%)';
+
+  // Per-part breakdown for full test
+  var breakdownEl = document.getElementById('quizPartBreakdown');
+  if (App.state.fullTestMode && breakdownEl) {
+    var p1Correct = 0, p1Total = 0, p2Correct = 0, p2Total = 0;
+    App.state.quizResults.forEach(function(r) {
+      if (r.part === 1) { p1Total++; if (r.correct) p1Correct++; }
+      else if (r.part === 2) { p2Total++; if (r.correct) p2Correct++; }
+    });
+    var timeUsed = CONFIG.FULL_TEST_TIME_SECONDS - App.state.quizTimeLeft;
+    var mins = Math.floor(timeUsed / 60);
+    var secs = timeUsed % 60;
+    breakdownEl.innerHTML =
+      '<div class="part-breakdown-row"><span>Part I: Proofreading</span><strong>' + p1Correct + ' / ' + p1Total + '</strong></div>' +
+      '<div class="part-breakdown-row"><span>Part II: Vocabulary</span><strong>' + p2Correct + ' / ' + p2Total + '</strong></div>' +
+      '<div class="part-breakdown-row"><span>Time Used</span><strong>' + mins + ':' + (secs < 10 ? '0' : '') + secs + '</strong></div>';
+    breakdownEl.classList.remove('hidden');
+  } else if (breakdownEl) {
+    breakdownEl.classList.add('hidden');
+  }
 
   document.getElementById('quizResultsList').innerHTML = App.state.quizResults.map(function(r) {
     return '<div class="result-item">' +

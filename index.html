@@ -181,6 +181,11 @@
         <h2>Quiz Mode</h2>
         <p>Simulate a real UIL Spelling test environment with timed questions.</p>
         <div class="quiz-types">
+          <div class="quiz-type-card fulltest-card" data-quiz="fulltest">
+            <div class="quiz-card-badge">Timed</div>
+            <h3>Full Practice Test</h3>
+            <p>15-minute timed test: Part I (15 Proofreading) + Part II (15 Vocabulary).</p>
+          </div>
           <div class="quiz-type-card" data-quiz="proofreading">
             <h3>Part I: Proofreading</h3>
             <p>Find the misspelled word from a group and correct it.</p>
@@ -198,8 +203,12 @@
       <div class="quiz-active hidden" id="quizActive">
         <div class="quiz-header">
           <span>Question <span id="quizNum">1</span> / <span id="quizTotal">15</span></span>
+          <div class="quiz-timer hidden" id="quizTimer">
+            <span id="quizTimerText">15:00</span>
+          </div>
           <span>Score: <span id="quizScore">0</span></span>
         </div>
+        <div class="quiz-part-label hidden" id="quizPartLabel">Part I: Proofreading</div>
         <div class="quiz-question" id="quizQuestion"></div>
         <div class="quiz-options" id="quizOptions"></div>
         <div class="quiz-input hidden" id="quizInput">
@@ -212,6 +221,7 @@
       <div class="quiz-results hidden" id="quizResults">
         <h2>Quiz Complete!</h2>
         <div class="results-score" id="quizResultsScore"></div>
+        <div class="part-breakdown hidden" id="quizPartBreakdown"></div>
         <div class="results-list" id="quizResultsList"></div>
         <button class="btn btn-primary btn-large" id="restartQuiz">Try Again</button>
       </div>

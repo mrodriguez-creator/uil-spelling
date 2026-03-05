@@ -12,6 +12,11 @@ var CONFIG = {
   QUIZ_POOL_SIZE: 75,              // Word pool for proofreading quiz
   QUIZ_WORDS_PER_GROUP: 5,         // Words shown per proofreading question
 
+  // ==================== FULL PRACTICE TEST ====================
+  FULL_TEST_PROOFREAD_COUNT: 15,   // Part I questions
+  FULL_TEST_VOCAB_COUNT: 15,       // Part II questions
+  FULL_TEST_TIME_SECONDS: 900,     // 15 minutes
+
   // ==================== AUDIO TEST ====================
   AUDIO_DELAY_AFTER_FIRST: 600,    // ms pause after first pronunciation
   AUDIO_DELAY_AFTER_SECOND: 800,   // ms pause after second pronunciation

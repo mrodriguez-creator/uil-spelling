@@ -20,6 +20,8 @@ App.state = {
   quizScore: 0,
   quizTimer: null,
   quizTimeLeft: CONFIG.QUIZ_TIME_SECONDS,
+  quizResults: [],
+  fullTestMode: false,
   definitionCache: JSON.parse(localStorage.getItem(CONFIG.STORAGE_DEFS) || '{}'),
   audioManifest: typeof AUDIO_MANIFEST !== 'undefined' ? AUDIO_MANIFEST : null,
   currentAudio: null,
