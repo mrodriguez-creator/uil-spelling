@@ -15,11 +15,7 @@
     });
     App.state.filteredWords = App.state.words.slice();
 
-    // Load audio manifest
-    fetch('audio/manifest.json')
-      .then(function(r) { return r.json(); })
-      .then(function(data) { App.state.audioManifest = data; })
-      .catch(function() { App.state.audioManifest = null; });
+    // Audio manifest is now embedded in words-data.js (no fetch needed)
 
     setupTabs();
     App.setupExplorer();

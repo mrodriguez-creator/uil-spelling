@@ -141,7 +141,6 @@
               <option value="all">All Words</option>
               <option value="vocab">Vocabulary Words</option>
               <option value="unstudied">Not Yet Studied</option>
-              <option value="meet1">Meet #1 Words</option>
             </select>
           </label>
         </div>
@@ -304,41 +303,11 @@
               <option value="all">All Words (Random)</option>
               <option value="vocab">Vocabulary Words Only</option>
               <option value="unstudied">Not Yet Studied</option>
-              <option value="meet1">Meet #1 Words (with definitions)</option>
             </select>
           </div>
         </div>
         <button class="btn btn-primary btn-large" id="startAudioTest">Start Test</button>
 
-        <details class="meet-audio-section">
-          <summary>Original Meet Audio Recordings</summary>
-          <div class="audio-cards">
-            <div class="audio-card">
-              <h3>Meet #1</h3>
-              <div class="audio-track"><span>Words 1-40</span><audio controls src="audio/meet1-words-1-40.mp3"></audio></div>
-              <div class="audio-track"><span>Words 41-70</span><audio controls src="audio/meet1-words-41-70.mp3"></audio></div>
-              <div class="audio-track"><span>Tiebreaker</span><audio controls src="audio/meet1-tiebreaker-1-20.mp3"></audio></div>
-            </div>
-            <div class="audio-card">
-              <h3>Meet #2</h3>
-              <div class="audio-track"><span>Words 1-40</span><audio controls src="audio/meet2-words-1-40.mp3"></audio></div>
-              <div class="audio-track"><span>Words 41-70</span><audio controls src="audio/meet2-words-41-70.mp3"></audio></div>
-              <div class="audio-track"><span>Tiebreaker</span><audio controls src="audio/meet2-tiebreaker-1-20.mp3"></audio></div>
-            </div>
-            <div class="audio-card">
-              <h3>Meet #3</h3>
-              <div class="audio-track"><span>Words 1-40</span><audio controls src="audio/meet3-words-1-40.mp3"></audio></div>
-              <div class="audio-track"><span>Words 41-70</span><audio controls src="audio/meet3-words-41-70.mp3"></audio></div>
-              <div class="audio-track"><span>Tiebreaker</span><audio controls src="audio/meet3-tiebreaker-1-20.mp3"></audio></div>
-            </div>
-            <div class="audio-card">
-              <h3>Meet #4</h3>
-              <div class="audio-track"><span>Words 1-40</span><audio controls src="audio/meet4-words-1-40.mp3"></audio></div>
-              <div class="audio-track"><span>Words 41-70</span><audio controls src="audio/meet4-words-41-70.mp3"></audio></div>
-              <div class="audio-track"><span>Tiebreaker</span><audio controls src="audio/meet4-tiebreaker-1-20.mp3"></audio></div>
-            </div>
-          </div>
-        </details>
       </div>
 
       <!-- Active Test Screen -->
@@ -393,14 +362,20 @@
     <p>UIL Spelling & Vocabulary Practice Tool | Word Power 2025-2026</p>
   </footer>
 
-  <script src="js/words.js"></script>
+  <!-- Data files -->
+  <script src="js/words-data.js"></script>
+  <script src="js/reference-data.js"></script>
+  <!-- Configuration & shared state -->
+  <script src="js/config.js"></script>
   <script src="js/state.js"></script>
+  <!-- Feature modules -->
   <script src="js/explorer.js"></script>
   <script src="js/study.js"></script>
   <script src="js/practice.js"></script>
   <script src="js/quiz.js"></script>
   <script src="js/reference.js"></script>
   <script src="js/audio-test.js"></script>
+  <!-- Entry point -->
   <script src="js/app.js"></script>
 </body>
 </html>

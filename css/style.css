@@ -590,6 +590,20 @@ main {
 }
 .quiz-feedback.correct { background: #f0fdf4; color: var(--success); }
 .quiz-feedback.incorrect { background: #fef2f2; color: var(--error); }
+.proof-spell-input {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.quiz-spell-input {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+}
+.quiz-spell-input:focus { border-color: var(--primary); outline: none; }
 #quizInput {
   display: flex;
   gap: 8px;

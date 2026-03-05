@@ -27,18 +27,6 @@ App.startPractice = function() {
   switch (source) {
     case 'vocab': pool = App.state.words.filter(function(w) { return w.vocab; }); break;
     case 'unstudied': pool = App.state.words.filter(function(w) { return !App.getStatus(w.word); }); break;
-    case 'meet1':
-      pool = PRACTICE_TESTS.meet1.words.map(function(w, i) {
-        return {
-          id: 1000 + i,
-          word: w.word,
-          alt: w.alt || null,
-          vocab: false,
-          number: i + 1,
-          def: w.def
-        };
-      });
-      break;
     default: pool = App.state.words.slice();
   }
 

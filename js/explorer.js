@@ -66,7 +66,7 @@ App.renderWordGrid = function() {
   var count = document.getElementById('wordCount');
   count.textContent = 'Showing ' + App.state.filteredWords.length + ' of ' + App.state.words.length + ' words';
 
-  var visible = App.state.filteredWords.slice(0, 200);
+  var visible = App.state.filteredWords.slice(0, CONFIG.EXPLORER_MAX_VISIBLE);
   grid.innerHTML = visible.map(function(w) {
     var status = App.getStatus(w.word);
     var statusIcon = status === 'mastered' ? '&#9733;' : status === 'studied' ? '&#10003;' : '';
@@ -81,9 +81,9 @@ App.renderWordGrid = function() {
       '</div>';
   }).join('');
 
-  if (App.state.filteredWords.length > 200) {
+  if (App.state.filteredWords.length > CONFIG.EXPLORER_MAX_VISIBLE) {
     grid.innerHTML += '<div class="word-card" style="grid-column: 1/-1; text-align:center; color: var(--text-light);">' +
-      'Showing first 200 of ' + App.state.filteredWords.length + ' results. Use search or filters to narrow down.</div>';
+      'Showing first ' + CONFIG.EXPLORER_MAX_VISIBLE + ' of ' + App.state.filteredWords.length + ' results. Use search or filters to narrow down.</div>';
   }
 
   grid.querySelectorAll('.word-card[data-id]').forEach(function(card) {

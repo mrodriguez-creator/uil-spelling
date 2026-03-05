@@ -7,7 +7,7 @@ var App = {};
 App.state = {
   words: [],
   filteredWords: [],
-  studied: JSON.parse(localStorage.getItem('uil-studied') || '{}'),
+  studied: JSON.parse(localStorage.getItem(CONFIG.STORAGE_STUDIED) || '{}'),
   currentCard: 0,
   studyDeck: [],
   practiceWords: [],
@@ -19,17 +19,16 @@ App.state = {
   quizIndex: 0,
   quizScore: 0,
   quizTimer: null,
-  quizTimeLeft: 900,
-  definitionCache: JSON.parse(localStorage.getItem('uil-defs') || '{}'),
-  audioManifest: null,
+  quizTimeLeft: CONFIG.QUIZ_TIME_SECONDS,
+  definitionCache: JSON.parse(localStorage.getItem(CONFIG.STORAGE_DEFS) || '{}'),
+  audioManifest: typeof AUDIO_MANIFEST !== 'undefined' ? AUDIO_MANIFEST : null,
   currentAudio: null,
-  // Audio Test state
   audioTest: {
     words: [],
     index: 0,
     score: 0,
     results: [],
-    wordCount: 35,
+    wordCount: CONFIG.AUDIO_TEST_DEFAULT,
     isPlaying: false,
     currentSequence: null
   }
@@ -37,7 +36,7 @@ App.state = {
 
 // ==================== PROGRESS ====================
 App.saveStudied = function() {
-  localStorage.setItem('uil-studied', JSON.stringify(App.state.studied));
+  localStorage.setItem(CONFIG.STORAGE_STUDIED, JSON.stringify(App.state.studied));
   App.updateProgress();
 };
 
@@ -58,38 +57,43 @@ App.setStatus = function(word, status) {
 
 // ==================== DEFINITIONS ====================
 App.findDefinition = function(wordObj) {
-  // Check practice test data
+  var lower = wordObj.word.toLowerCase();
+  // Check embedded definitions first (fastest)
+  if (typeof DEFINITIONS !== 'undefined' && DEFINITIONS[lower]) {
+    return DEFINITIONS[lower];
+  }
+  // Then practice tests
   for (var key in PRACTICE_TESTS) {
     var meet = PRACTICE_TESTS[key];
     var found = meet.words.find(function(w) {
-      return w.word.toLowerCase() === wordObj.word.toLowerCase();
+      return w.word.toLowerCase() === lower;
     });
     if (found) return found.def;
   }
-  // Check cache
-  return App.state.definitionCache[wordObj.word.toLowerCase()] || null;
+  // Then localStorage cache (from previous API fetches)
+  return App.state.definitionCache[lower] || null;
 };
 
 App.fetchDefinition = async function(word) {
   var cleanWord = word.replace(/[^a-zA-Z-\s]/g, '').trim();
-  if (!cleanWord) return 'Definition not available for this term.';
+  if (!cleanWord) return CONFIG.DEF_NOT_AVAILABLE_TEXT;
 
   try {
-    var res = await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/' + encodeURIComponent(cleanWord));
-    if (!res.ok) return 'Definition not available. Check a dictionary for this word.';
+    var res = await fetch(CONFIG.DEF_API_URL + encodeURIComponent(cleanWord));
+    if (!res.ok) return CONFIG.DEF_FALLBACK_TEXT;
     var data = await res.json();
     if (data && data[0] && data[0].meanings) {
       var defs = data[0].meanings.map(function(m) {
         return '(' + m.partOfSpeech + ') ' + m.definitions[0].definition;
       }).join(' | ');
       App.state.definitionCache[word.toLowerCase()] = defs;
-      if (Object.keys(App.state.definitionCache).length % 10 === 0) {
-        localStorage.setItem('uil-defs', JSON.stringify(App.state.definitionCache));
+      if (Object.keys(App.state.definitionCache).length % CONFIG.DEF_CACHE_SAVE_INTERVAL === 0) {
+        localStorage.setItem(CONFIG.STORAGE_DEFS, JSON.stringify(App.state.definitionCache));
       }
       return defs;
     }
   } catch (e) { /* silent */ }
-  return 'Definition not available. Check a dictionary for this word.';
+  return CONFIG.DEF_FALLBACK_TEXT;
 };
 
 // ==================== SPELLING CHECK ====================
@@ -128,7 +132,7 @@ App.speak = function(text) {
 App.speakTTS = function(text) {
   if ('speechSynthesis' in window) {
     var u = new SpeechSynthesisUtterance(text);
-    u.rate = 0.8;
+    u.rate = CONFIG.AUDIO_TTS_RATE_NORMAL;
     u.pitch = 1;
     speechSynthesis.cancel();
     speechSynthesis.speak(u);
@@ -143,9 +147,9 @@ App.speakTTSAsync = function(text) {
     }
     speechSynthesis.cancel();
     var u = new SpeechSynthesisUtterance(text);
-    u.rate = 0.85;
+    u.rate = CONFIG.AUDIO_TTS_RATE;
     u.pitch = 1;
-    var timeout = setTimeout(function() { resolve(); }, 15000);
+    var timeout = setTimeout(function() { resolve(); }, CONFIG.AUDIO_TTS_TIMEOUT);
     u.onend = function() { clearTimeout(timeout); resolve(); };
     u.onerror = function() { clearTimeout(timeout); resolve(); };
     speechSynthesis.speak(u);

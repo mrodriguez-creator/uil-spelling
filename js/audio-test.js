@@ -36,18 +36,6 @@ App.startAudioTest = function() {
     case 'unstudied':
       pool = App.state.words.filter(function(w) { return !App.getStatus(w.word); });
       break;
-    case 'meet1':
-      pool = PRACTICE_TESTS.meet1.words.map(function(w, i) {
-        return {
-          id: 2000 + i,
-          word: w.word,
-          alt: w.alt || null,
-          vocab: false,
-          number: i + 1,
-          def: w.def
-        };
-      });
-      break;
     default:
       pool = App.state.words.slice();
   }
@@ -79,6 +67,13 @@ App.startAudioTest = function() {
 };
 
 App.playAudioTestWord = function() {
+  // Stop any currently playing audio/TTS from a previous word or replay
+  if (App.state.currentAudio) {
+    App.state.currentAudio.pause();
+    App.state.currentAudio = null;
+  }
+  speechSynthesis.cancel();
+
   var w = App.state.audioTest.words[App.state.audioTest.index];
   var statusEl = document.getElementById('audioTestStatus');
   var inputEl = document.getElementById('audioTestInput');
@@ -115,41 +110,44 @@ App.runAudioSequence = async function(wordObj, sequenceId) {
   await App.playWordAudio(wordObj.word);
   if (App.state.audioTest.currentSequence !== sequenceId) return;
 
-  await App.delay(600);
+  // Enable input immediately after first pronunciation so student can start typing
+  App.state.audioTest.isPlaying = false;
+  statusEl.innerHTML = '<div class="audio-pulse"></div><span>&#9998; Type anytime \u2014 audio continues...</span>';
+  document.getElementById('audioTestInput').disabled = false;
+  document.getElementById('audioTestSubmit').disabled = false;
+  document.getElementById('audioTestInput').focus();
+
+  await App.delay(CONFIG.AUDIO_DELAY_AFTER_FIRST);
   if (App.state.audioTest.currentSequence !== sequenceId) return;
 
-  statusEl.innerHTML = '<div class="audio-pulse"></div><span>Pronouncing word again...</span>';
+  statusEl.innerHTML = '<div class="audio-pulse"></div><span>Pronouncing word again... (type anytime)</span>';
   await App.playWordAudio(wordObj.word);
   if (App.state.audioTest.currentSequence !== sequenceId) return;
 
   if (defPromise) {
     var fetchedDef = await defPromise;
-    wordObj.def = fetchedDef || 'Spell the word as pronounced.';
+    wordObj.def = fetchedDef || CONFIG.DEF_SPELL_ONLY_TEXT;
     App.state.audioTest.words[App.state.audioTest.index] = wordObj;
   }
   if (!wordObj.def) {
-    wordObj.def = 'Spell the word as pronounced.';
+    wordObj.def = CONFIG.DEF_SPELL_ONLY_TEXT;
   }
 
-  await App.delay(800);
+  await App.delay(CONFIG.AUDIO_DELAY_AFTER_SECOND);
   if (App.state.audioTest.currentSequence !== sequenceId) return;
 
-  statusEl.innerHTML = '<div class="audio-pulse pulse-green"></div><span>Reading definition...</span>';
+  statusEl.innerHTML = '<div class="audio-pulse pulse-green"></div><span>Reading definition... (type anytime)</span>';
   await App.speakTTSAsync(wordObj.def);
   if (App.state.audioTest.currentSequence !== sequenceId) return;
 
-  await App.delay(800);
+  await App.delay(CONFIG.AUDIO_DELAY_AFTER_DEF);
   if (App.state.audioTest.currentSequence !== sequenceId) return;
 
   statusEl.innerHTML = '<div class="audio-pulse"></div><span>Pronouncing word one last time...</span>';
   await App.playWordAudio(wordObj.word);
   if (App.state.audioTest.currentSequence !== sequenceId) return;
 
-  App.state.audioTest.isPlaying = false;
   statusEl.innerHTML = '<span class="audio-ready">&#9998; Type your answer below</span>';
-  document.getElementById('audioTestInput').disabled = false;
-  document.getElementById('audioTestSubmit').disabled = false;
-  document.getElementById('audioTestInput').focus();
 };
 
 App.replayAudioTestWord = function() {
@@ -170,6 +168,14 @@ App.submitAudioTestAnswer = function() {
   var w = App.state.audioTest.words[App.state.audioTest.index];
   var answer = document.getElementById('audioTestInput').value.trim();
   if (!answer) return;
+
+  // Stop any remaining audio sequence when answer is submitted
+  App.state.audioTest.currentSequence = null;
+  if (App.state.currentAudio) {
+    App.state.currentAudio.pause();
+    App.state.currentAudio = null;
+  }
+  speechSynthesis.cancel();
 
   var correct = App.isSpellingCorrect(answer, w);
   var feedback = document.getElementById('audioTestFeedback');
