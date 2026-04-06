@@ -371,10 +371,9 @@ App.showRegionalWord = function() {
   var statusEl = document.getElementById('regionalStatus');
   var label = '';
   if (r.index < r.mainWordCount) {
-    if (r.index < 40) label = 'Part II &mdash; Words 1-40';
-    else label = 'Part II &mdash; Words 41-70';
+    label = 'Part II &mdash; ' + (r.index + 1) + ' / ' + r.mainWordCount;
   } else {
-    label = 'Tiebreaker';
+    label = 'Tiebreaker &mdash; ' + (r.index - r.mainWordCount + 1) + ' / ' + (r.words.length - r.mainWordCount);
   }
   statusEl.innerHTML = '<span class="regional-section-label">' + label + '</span> ' +
     '<span class="audio-ready">Click "Play Word" to hear the pronunciation</span>';
