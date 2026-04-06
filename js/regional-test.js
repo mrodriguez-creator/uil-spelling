@@ -6,6 +6,7 @@
 var REGIONAL_CONFIG = {
   GOOGLE_FORM_URL: 'https://docs.google.com/forms/d/e/1FAIpQLSeRRA6shkmb2lmImETFSmJU-KbQgijUZ5inAgoXHDXoHdPMoQ/formResponse',
   FIELD_STUDENT_NAME: 'entry.1517540485',
+  FIELD_MEET_NAME: 'entry.590766384',
   FIELD_SCORE: 'entry.1304445324',
   FIELD_DATE: 'entry.1022289364',
   DEFAULT_PROF_EMAIL: 'mrodriguez@alpineisd.net'
@@ -818,9 +819,10 @@ App.submitToGoogleForm = function() {
   // Build form data matching Google Form fields
   var formData = new URLSearchParams();
   formData.append(REGIONAL_CONFIG.FIELD_STUDENT_NAME, r.studentName);
-  var scoreText = r.meetName + ' — ' + r.score + '/' + total + ' (' + pct + '%)';
+  formData.append(REGIONAL_CONFIG.FIELD_MEET_NAME, r.meetName);
+  var scoreText = r.score + '/' + total + ' (' + pct + '%)';
   if (r.part1Results) {
-    scoreText = r.meetName + ' — Part I: ' + r.part1Score + '/30, Part II: ' + r.score + '/' + total + ' (' + pct + '%)';
+    scoreText = 'Part I: ' + r.part1Score + '/30, Part II: ' + r.score + '/' + total + ' (' + pct + '%)';
   }
   formData.append(REGIONAL_CONFIG.FIELD_SCORE, scoreText);
   formData.append(REGIONAL_CONFIG.FIELD_DATE, dateStr + ' at ' + timeStr);
