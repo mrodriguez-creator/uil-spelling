@@ -170,12 +170,14 @@ App.startPart1 = function(meet) {
   // Build proofreading questions
   var proofHtml = '';
   partI.proofreading.forEach(function(q, i) {
+    var hasAccent = q.words.some(function(w) { return /[^\x00-\x7F]/.test(w); }) || /[^\x00-\x7F]/.test(q.answer);
     proofHtml += '<div class="part1-proof-item">' +
       '<div class="part1-proof-num">' + (i + 1) + '.</div>' +
       '<div class="part1-proof-words">' + q.words.map(function(w) {
         return '<span class="part1-proof-word">' + App.escapeHtml(w) + '</span>';
       }).join('') + '</div>' +
       '<input type="text" class="part1-proof-input" id="proof' + i + '" placeholder="Type corrected word..." autocomplete="off" autocapitalize="off" spellcheck="false">' +
+      (hasAccent ? '<div class="part1-accent-helper" id="proofAccent' + i + '">' + App.buildAccentHelper('proof' + i) + '</div>' : '') +
       '</div>';
   });
   document.getElementById('part1ProofQuestions').innerHTML = proofHtml;
@@ -196,6 +198,17 @@ App.startPart1 = function(meet) {
       '</div></div>';
   });
   document.getElementById('part1VocabQuestions').innerHTML = vocabHtml;
+
+  // Wire up accent buttons for proofreading inputs
+  document.querySelectorAll('.part1-accent-helper').forEach(function(helper) {
+    var inputId = helper.id.replace('proofAccent', 'proof');
+    helper.querySelectorAll('.accent-btn').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        App.insertAccentChar(inputId, btn.dataset.char);
+      });
+    });
+  });
 
   // Wire up A-E buttons
   document.querySelectorAll('.part1-choice-btn').forEach(function(btn) {

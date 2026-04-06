@@ -1276,6 +1276,8 @@ main {
   font-size: 16px; transition: border-color 0.2s;
 }
 .part1-proof-input:focus { border-color: var(--primary); outline: none; }
+.part1-accent-helper { grid-column: 2; }
+.part1-accent-helper .accent-helper { margin-top: 4px; justify-content: flex-start; }
 
 /* Vocabulary items */
 .part1-vocab-item {
