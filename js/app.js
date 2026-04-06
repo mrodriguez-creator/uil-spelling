@@ -24,6 +24,7 @@
     App.setupQuiz();
     App.setupReference();
     App.setupAudioTest();
+    App.setupRegionalTest();
     App.setupDashboard();
     App.setupSpeedRound();
     App.setupAccentDrill();

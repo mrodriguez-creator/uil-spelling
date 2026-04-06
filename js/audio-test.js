@@ -17,10 +17,7 @@ App.setupAudioTest = function() {
   });
   document.getElementById('audioTestNext').addEventListener('click', App.nextAudioTestWord);
   document.getElementById('audioTestReplay').addEventListener('click', App.replayAudioTestWord);
-  document.getElementById('restartAudioTest').addEventListener('click', function() {
-    document.getElementById('audioTestResults').classList.add('hidden');
-    document.getElementById('audioTestSetup').classList.remove('hidden');
-  });
+  // restartAudioTest is handled in regional-test.js (goes back to mode selector)
   document.getElementById('reviewMissedWords').addEventListener('click', App.reviewMissedAudioWords);
 };
 

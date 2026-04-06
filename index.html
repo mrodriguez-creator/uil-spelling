@@ -333,8 +333,28 @@
 
     <!-- AUDIO TESTS TAB -->
     <section id="tab-audio" class="tab-content">
-      <!-- Setup Screen -->
-      <div class="audio-test-setup" id="audioTestSetup">
+      <!-- Mode Selector -->
+      <div class="audio-mode-selector" id="audioModeSelector">
+        <h2>Audio Tests</h2>
+        <p class="audio-mode-intro">Choose a test mode below.</p>
+        <div class="audio-mode-cards">
+          <div class="audio-mode-card" id="audioModeRandom">
+            <div class="audio-mode-icon">&#128266;</div>
+            <h3>Audio Practice</h3>
+            <p>Random words with auto-paced audio sequence. Great for daily practice.</p>
+          </div>
+          <div class="audio-mode-card audio-mode-regional" id="audioModeRegional">
+            <div class="audio-mode-badge">NEW</div>
+            <div class="audio-mode-icon">&#127942;</div>
+            <h3>Regional Test</h3>
+            <p>Official meet format. Self-paced. PDF report and scores sent to professor.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Audio Practice Setup Screen -->
+      <div class="audio-test-setup hidden" id="audioTestSetup">
+        <button class="btn btn-outline btn-back" id="audioTestBack">&larr; Back</button>
         <h2>Audio Spelling Test</h2>
         <p>Listen carefully. The pronouncer will say the word twice, read the definition, then say the word one more time. Type the correct spelling.</p>
         <div class="audio-test-options">
@@ -357,7 +377,6 @@
           </div>
         </div>
         <button class="btn btn-primary btn-large" id="startAudioTest">Start Test</button>
-
       </div>
 
       <!-- Active Test Screen -->
@@ -394,7 +413,7 @@
         </div>
       </div>
 
-      <!-- Results Screen -->
+      <!-- Audio Practice Results Screen -->
       <div class="audio-test-results hidden" id="audioTestResults">
         <h2>Test Complete!</h2>
         <div class="results-score" id="audioTestResultsScore"></div>
@@ -403,6 +422,88 @@
         <div class="audio-test-result-actions">
           <button class="btn btn-primary btn-large" id="restartAudioTest">Take Another Test</button>
           <button class="btn btn-outline btn-large" id="reviewMissedWords">Review Missed Words</button>
+        </div>
+      </div>
+
+      <!-- Regional Test Setup -->
+      <div class="regional-setup hidden" id="regionalSetup">
+        <button class="btn btn-outline btn-back" id="regionalBack">&larr; Back</button>
+        <h2>Regional Spelling Test</h2>
+        <p>Self-paced test using official Virtual Challenge Meet words. You control when to hear each word. A PDF report is generated and scores are submitted to your professor.</p>
+        <div class="regional-options">
+          <div class="audio-option-group">
+            <label>Select Meet:</label>
+            <select id="regionalMeetSelect">
+              <option value="meet5">Virtual Challenge Meet #5 (70 words)</option>
+              <option value="meet1">Virtual Challenge Meet #1 (50 words)</option>
+            </select>
+          </div>
+          <div class="audio-option-group">
+            <label>Include Tiebreaker?</label>
+            <select id="regionalTiebreaker">
+              <option value="no">No &mdash; Words 1-70 only</option>
+              <option value="yes">Yes &mdash; Include Tiebreaker (20 extra words)</option>
+            </select>
+          </div>
+          <div class="audio-option-group">
+            <label>Student Name:</label>
+            <input type="text" id="regionalStudentName" placeholder="Enter your full name..." autocomplete="name" class="regional-input">
+          </div>
+          <div class="audio-option-group">
+            <label>Professor Email (for score submission):</label>
+            <input type="email" id="regionalProfEmail" placeholder="professor@school.edu" autocomplete="email" class="regional-input">
+          </div>
+        </div>
+        <button class="btn btn-primary btn-large" id="startRegional">Start Regional Test</button>
+      </div>
+
+      <!-- Regional Test Active -->
+      <div class="regional-active hidden" id="regionalActive">
+        <div class="audio-test-header">
+          <div class="audio-test-progress">
+            <span>Word <strong id="regionalNum">1</strong> of <strong id="regionalTotal">70</strong></span>
+            <div class="progress-bar">
+              <div class="progress-fill" id="regionalProgressBar"></div>
+            </div>
+          </div>
+          <div class="audio-test-score-display">
+            Score: <span id="regionalScore">0</span>
+          </div>
+        </div>
+        <div class="audio-test-card regional-card">
+          <div class="regional-pace-controls">
+            <button class="btn btn-speak btn-large" id="regionalPlayWord">&#128266; Play Word</button>
+            <button class="btn btn-outline" id="regionalPlayDef">&#128214; Hear Definition</button>
+            <button class="btn btn-outline" id="regionalReplay">&#128260; Replay</button>
+          </div>
+          <div class="audio-test-status" id="regionalStatus">
+            <span class="audio-ready">Click "Play Word" to hear the pronunciation</span>
+          </div>
+          <div class="audio-test-input-area">
+            <input type="text" id="regionalInput" placeholder="Type the word you heard..." autocomplete="off" autocapitalize="off" spellcheck="false">
+            <button class="btn btn-primary" id="regionalSubmit">Submit</button>
+          </div>
+          <div class="audio-test-feedback hidden" id="regionalFeedback"></div>
+          <button class="btn btn-primary hidden" id="regionalNext">Next Word</button>
+        </div>
+      </div>
+
+      <!-- Regional Test Results -->
+      <div class="regional-results hidden" id="regionalResults">
+        <h2>Regional Test Complete!</h2>
+        <div class="results-score" id="regionalResultsScore"></div>
+        <div class="audio-test-grade" id="regionalGrade"></div>
+        <div class="regional-student-info" id="regionalStudentInfo"></div>
+        <div class="regional-result-actions">
+          <button class="btn btn-primary btn-large" id="regionalDownloadPDF">&#128196; Download PDF Report</button>
+          <button class="btn btn-outline btn-large" id="regionalSubmitGoogle">&#9993; Submit Scores to Professor</button>
+          <button class="btn btn-outline btn-large" id="regionalEmailResults">&#9993; Email Results</button>
+        </div>
+        <div class="regional-submit-status hidden" id="regionalSubmitStatus"></div>
+        <div class="results-list" id="regionalResultsList"></div>
+        <div class="audio-test-result-actions">
+          <button class="btn btn-primary btn-large" id="restartRegional">Take Another Test</button>
+          <button class="btn btn-outline btn-large" id="regionalReviewMissed">Review Missed Words</button>
         </div>
       </div>
     </section>
@@ -614,6 +715,8 @@
   <script src="js/quiz.js"></script>
   <script src="js/reference.js"></script>
   <script src="js/audio-test.js"></script>
+  <script src="js/regional-test.js"></script>
+  <script src="js/jspdf.umd.min.js"></script>
   <script src="js/word-families.js"></script>
   <script src="js/dashboard.js"></script>
   <script src="js/speed-round.js"></script>
