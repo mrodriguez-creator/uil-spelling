@@ -457,7 +457,39 @@
         <button class="btn btn-primary btn-large" id="startRegional">Start Regional Test</button>
       </div>
 
-      <!-- Regional Test Active -->
+      <!-- Part I: Written Test -->
+      <div class="regional-part1 hidden" id="regionalPart1">
+        <div class="part1-header">
+          <h2>Part I: Spelling &amp; Vocabulary</h2>
+          <div class="part1-timer" id="part1Timer">15:00</div>
+        </div>
+        <p class="part1-instructions">You have <strong>15 minutes</strong> to complete all 30 questions.</p>
+
+        <div class="part1-section">
+          <h3>Proofreading (1&ndash;15)</h3>
+          <p class="part1-directions">Find the <strong>one misspelled word</strong> in each group and type it <strong>correctly</strong>.</p>
+          <div id="part1ProofQuestions"></div>
+        </div>
+
+        <div class="part1-section">
+          <h3>Vocabulary (16&ndash;30)</h3>
+          <p class="part1-directions">Choose the best answer (A&ndash;E) for each question.</p>
+          <div id="part1VocabQuestions"></div>
+        </div>
+
+        <button class="btn btn-primary btn-large" id="submitPart1">Submit Part I</button>
+      </div>
+
+      <!-- Part I Results -->
+      <div class="regional-part1-results hidden" id="regionalPart1Results">
+        <h2>Part I Results</h2>
+        <div class="results-score" id="part1ResultsScore"></div>
+        <div class="part1-breakdown" id="part1Breakdown"></div>
+        <div class="results-list" id="part1ResultsList"></div>
+        <button class="btn btn-primary btn-large" id="startPart2">Continue to Part II (Audio Spelling) &rarr;</button>
+      </div>
+
+      <!-- Regional Test Active (Part II) -->
       <div class="regional-active hidden" id="regionalActive">
         <div class="audio-test-header">
           <div class="audio-test-progress">

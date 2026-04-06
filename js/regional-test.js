@@ -147,14 +147,191 @@ App.startRegionalTest = function() {
     profEmail: profEmail,
     startTime: new Date(),
     includeTiebreaker: includeTB,
-    mainWordCount: meet.words.length
+    mainWordCount: meet.words.length,
+    part1Score: 0,
+    part1Results: []
   };
 
   document.getElementById('regionalSetup').classList.add('hidden');
-  document.getElementById('regionalActive').classList.remove('hidden');
-  document.getElementById('regionalTotal').textContent = words.length;
-  document.getElementById('regionalScore').textContent = '0';
 
+  // If meet has Part I data, show Part I first
+  if (meet.partI) {
+    App.startPart1(meet);
+  } else {
+    App.startPart2();
+  }
+};
+
+// ==================== PART I ====================
+App.startPart1 = function(meet) {
+  var partI = meet.partI;
+  document.getElementById('regionalPart1').classList.remove('hidden');
+
+  // Build proofreading questions
+  var proofHtml = '';
+  partI.proofreading.forEach(function(q, i) {
+    proofHtml += '<div class="part1-proof-item">' +
+      '<div class="part1-proof-num">' + (i + 1) + '.</div>' +
+      '<div class="part1-proof-words">' + q.words.map(function(w) {
+        return '<span class="part1-proof-word">' + App.escapeHtml(w) + '</span>';
+      }).join('') + '</div>' +
+      '<input type="text" class="part1-proof-input" id="proof' + i + '" placeholder="Type corrected word..." autocomplete="off" autocapitalize="off" spellcheck="false">' +
+      '</div>';
+  });
+  document.getElementById('part1ProofQuestions').innerHTML = proofHtml;
+
+  // Build vocabulary questions
+  var vocabHtml = '';
+  var letters = ['A','B','C','D','E'];
+  partI.vocabulary.forEach(function(q, i) {
+    var qNum = i + 16;
+    vocabHtml += '<div class="part1-vocab-item">' +
+      '<div class="part1-vocab-num">' + qNum + '.</div>' +
+      '<div class="part1-vocab-question">' + App.escapeHtml(q.q) + '</div>' +
+      '<div class="part1-vocab-choices" id="vocab' + i + '">' +
+      q.choices.map(function(c, ci) {
+        return '<button class="part1-choice-btn" data-question="' + i + '" data-letter="' + letters[ci] + '">' +
+          '<span class="part1-choice-letter">' + letters[ci] + '</span> ' + App.escapeHtml(c) + '</button>';
+      }).join('') +
+      '</div></div>';
+  });
+  document.getElementById('part1VocabQuestions').innerHTML = vocabHtml;
+
+  // Wire up A-E buttons
+  document.querySelectorAll('.part1-choice-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var qIdx = btn.dataset.question;
+      var container = document.getElementById('vocab' + qIdx);
+      container.querySelectorAll('.part1-choice-btn').forEach(function(b) {
+        b.classList.remove('selected');
+      });
+      btn.classList.add('selected');
+    });
+  });
+
+  // Start 15-minute timer
+  App.state.regional.part1TimeLeft = 900; // 15 minutes in seconds
+  App.updatePart1Timer();
+  App.state.regional.part1Interval = setInterval(function() {
+    App.state.regional.part1TimeLeft--;
+    App.updatePart1Timer();
+    if (App.state.regional.part1TimeLeft <= 0) {
+      clearInterval(App.state.regional.part1Interval);
+      App.submitPart1();
+    }
+  }, 1000);
+
+  // Submit button
+  document.getElementById('submitPart1').addEventListener('click', App.submitPart1);
+  // Continue to Part II
+  document.getElementById('startPart2').addEventListener('click', function() {
+    document.getElementById('regionalPart1Results').classList.add('hidden');
+    App.startPart2();
+  });
+};
+
+App.updatePart1Timer = function() {
+  var t = App.state.regional.part1TimeLeft;
+  var min = Math.floor(t / 60);
+  var sec = t % 60;
+  var timerEl = document.getElementById('part1Timer');
+  timerEl.textContent = min + ':' + (sec < 10 ? '0' : '') + sec;
+  if (t <= 60) {
+    timerEl.classList.add('timer-warning');
+  } else {
+    timerEl.classList.remove('timer-warning');
+  }
+};
+
+App.submitPart1 = function() {
+  if (App.state.regional.part1Interval) {
+    clearInterval(App.state.regional.part1Interval);
+    App.state.regional.part1Interval = null;
+  }
+
+  var meet = PRACTICE_TESTS[App.state.regional.meetKey];
+  var partI = meet.partI;
+  var r = App.state.regional;
+  var score = 0;
+  var results = [];
+
+  // Grade proofreading (1-15)
+  partI.proofreading.forEach(function(q, i) {
+    var input = document.getElementById('proof' + i);
+    var answer = input ? input.value.trim() : '';
+    var correct = App.isSpellingCorrect(answer, {word: q.answer, alt: null});
+    if (correct) score++;
+    results.push({
+      number: i + 1,
+      type: 'proofreading',
+      answer: answer,
+      correctAnswer: q.answer,
+      correct: correct
+    });
+  });
+
+  // Grade vocabulary (16-30)
+  partI.vocabulary.forEach(function(q, i) {
+    var container = document.getElementById('vocab' + i);
+    var selected = container ? container.querySelector('.part1-choice-btn.selected') : null;
+    var answer = selected ? selected.dataset.letter : '';
+    var correct = answer === q.answer;
+    if (correct) score++;
+    results.push({
+      number: i + 16,
+      type: 'vocabulary',
+      answer: answer,
+      correctAnswer: q.answer,
+      correct: correct
+    });
+  });
+
+  r.part1Score = score;
+  r.part1Results = results;
+
+  // Show Part I results
+  document.getElementById('regionalPart1').classList.add('hidden');
+  document.getElementById('regionalPart1Results').classList.remove('hidden');
+
+  var proofResults = results.filter(function(res) { return res.type === 'proofreading'; });
+  var vocabResults = results.filter(function(res) { return res.type === 'vocabulary'; });
+  var proofCorrect = proofResults.filter(function(res) { return res.correct; }).length;
+  var vocabCorrect = vocabResults.filter(function(res) { return res.correct; }).length;
+
+  document.getElementById('part1ResultsScore').textContent = score + ' / 30 (' + Math.round(score / 30 * 100) + '%)';
+
+  document.getElementById('part1Breakdown').innerHTML =
+    '<div class="part1-breakdown-row">Proofreading (1-15): <strong>' + proofCorrect + '/15</strong></div>' +
+    '<div class="part1-breakdown-row">Vocabulary (16-30): <strong>' + vocabCorrect + '/15</strong></div>';
+
+  var listHtml = '<h3 class="regional-section-header">Proofreading (1-15)</h3>';
+  proofResults.forEach(function(res) {
+    listHtml += '<div class="result-item">' +
+      '<span class="result-num">' + res.number + '.</span>' +
+      '<span class="result-icon ' + (res.correct ? 'result-correct' : 'result-wrong') + '">' + (res.correct ? '\u2713' : '\u2717') + '</span>' +
+      '<span><strong>' + App.escapeHtml(res.correctAnswer) + '</strong></span>' +
+      (!res.correct ? '<span class="result-answer">You typed: ' + (res.answer || '(blank)') + '</span>' : '') +
+      '</div>';
+  });
+
+  listHtml += '<h3 class="regional-section-header">Vocabulary (16-30)</h3>';
+  vocabResults.forEach(function(res) {
+    listHtml += '<div class="result-item">' +
+      '<span class="result-num">' + res.number + '.</span>' +
+      '<span class="result-icon ' + (res.correct ? 'result-correct' : 'result-wrong') + '">' + (res.correct ? '\u2713' : '\u2717') + '</span>' +
+      '<span>Correct: <strong>' + res.correctAnswer + '</strong></span>' +
+      (!res.correct ? '<span class="result-answer">You chose: ' + (res.answer || '(none)') + '</span>' : '') +
+      '</div>';
+  });
+
+  document.getElementById('part1ResultsList').innerHTML = listHtml;
+};
+
+App.startPart2 = function() {
+  var r = App.state.regional;
+  document.getElementById('regionalActive').classList.remove('hidden');
+  document.getElementById('regionalTotal').textContent = r.words.length;
+  document.getElementById('regionalScore').textContent = '0';
   App.showRegionalWord();
 };
 
@@ -301,7 +478,11 @@ App.showRegionalResults = function() {
   var score = r.score;
   var pct = Math.round(score / total * 100);
 
-  document.getElementById('regionalResultsScore').textContent = score + ' / ' + total + ' (' + pct + '%)';
+  var scoreDisplay = score + ' / ' + total + ' (' + pct + '%)';
+  if (r.part1Results) {
+    scoreDisplay = 'Part I: ' + r.part1Score + '/30  |  Part II: ' + score + '/' + total + ' (' + pct + '%)';
+  }
+  document.getElementById('regionalResultsScore').textContent = scoreDisplay;
 
   var gradeEl = document.getElementById('regionalGrade');
   var grade, gradeClass;
@@ -424,10 +605,102 @@ App.downloadRegionalPDF = function() {
   y += 7;
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  var breakdown = 'Part II: ' + mainCorrect + '/' + mainResults.length;
+  var breakdown = '';
+  if (r.part1Results) {
+    breakdown += 'Part I: ' + r.part1Score + '/30  |  ';
+  }
+  breakdown += 'Part II: ' + mainCorrect + '/' + mainResults.length;
   if (tbResults.length > 0) breakdown += '  |  Tiebreaker: ' + tbCorrect + '/' + tbResults.length;
   doc.text(breakdown, pageW / 2, y, { align: 'center' });
   y += 14;
+
+  // Part I results in PDF
+  if (r.part1Results) {
+    var proofResults = r.part1Results.filter(function(res) { return res.type === 'proofreading'; });
+    var vocabResults = r.part1Results.filter(function(res) { return res.type === 'vocabulary'; });
+
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Part I: Proofreading (1-15)', margin, y);
+    y += 3;
+
+    doc.setFillColor(59, 130, 246);
+    doc.rect(margin, y, pageW - 2 * margin, 7, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('#', margin + 3, y + 5);
+    doc.text('Correct Answer', margin + 15, y + 5);
+    doc.text('Student Answer', margin + 85, y + 5);
+    doc.text('Result', pageW - margin - 15, y + 5);
+    doc.setTextColor(0, 0, 0);
+    y += 9;
+
+    proofResults.forEach(function(res, idx) {
+      if (y > 270) { doc.addPage(); y = 20; }
+      if (idx % 2 === 0) {
+        doc.setFillColor(248, 250, 252);
+        doc.rect(margin, y - 4, pageW - 2 * margin, lineH, 'F');
+      }
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.text(String(res.number), margin + 3, y);
+      doc.text(res.correctAnswer, margin + 15, y);
+      doc.text(res.answer || '(blank)', margin + 85, y);
+      if (res.correct) {
+        doc.setTextColor(22, 163, 74); doc.setFont('helvetica', 'bold');
+        doc.text('CORRECT', pageW - margin - 15, y);
+      } else {
+        doc.setTextColor(220, 38, 38); doc.setFont('helvetica', 'bold');
+        doc.text('WRONG', pageW - margin - 15, y);
+      }
+      doc.setTextColor(0, 0, 0); doc.setFont('helvetica', 'normal');
+      y += lineH;
+    });
+
+    y += 8;
+    if (y > 250) { doc.addPage(); y = 20; }
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Part I: Vocabulary (16-30)', margin, y);
+    y += 3;
+
+    doc.setFillColor(59, 130, 246);
+    doc.rect(margin, y, pageW - 2 * margin, 7, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('#', margin + 3, y + 5);
+    doc.text('Correct', margin + 15, y + 5);
+    doc.text('Selected', margin + 85, y + 5);
+    doc.text('Result', pageW - margin - 15, y + 5);
+    doc.setTextColor(0, 0, 0);
+    y += 9;
+
+    vocabResults.forEach(function(res, idx) {
+      if (y > 270) { doc.addPage(); y = 20; }
+      if (idx % 2 === 0) {
+        doc.setFillColor(248, 250, 252);
+        doc.rect(margin, y - 4, pageW - 2 * margin, lineH, 'F');
+      }
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.text(String(res.number), margin + 3, y);
+      doc.text(res.correctAnswer, margin + 15, y);
+      doc.text(res.answer || '(none)', margin + 85, y);
+      if (res.correct) {
+        doc.setTextColor(22, 163, 74); doc.setFont('helvetica', 'bold');
+        doc.text('CORRECT', pageW - margin - 15, y);
+      } else {
+        doc.setTextColor(220, 38, 38); doc.setFont('helvetica', 'bold');
+        doc.text('WRONG', pageW - margin - 15, y);
+      }
+      doc.setTextColor(0, 0, 0); doc.setFont('helvetica', 'normal');
+      y += lineH;
+    });
+
+    y += 8;
+  }
 
   // Word-by-word table
   function drawTableHeader(yPos) {
@@ -538,7 +811,11 @@ App.submitToGoogleForm = function() {
   var formData = new URLSearchParams();
   formData.append(REGIONAL_CONFIG.FIELD_STUDENT_NAME, r.studentName);
   formData.append(REGIONAL_CONFIG.FIELD_MEET_NAME, r.meetName);
-  formData.append(REGIONAL_CONFIG.FIELD_SCORE, r.score + '/' + total + ' (' + pct + '%)');
+  var scoreText = r.score + '/' + total + ' (' + pct + '%)';
+  if (r.part1Results) {
+    scoreText = 'Part I: ' + r.part1Score + '/30, Part II: ' + r.score + '/' + total + ' (' + pct + '%)';
+  }
+  formData.append(REGIONAL_CONFIG.FIELD_SCORE, scoreText);
   formData.append(REGIONAL_CONFIG.FIELD_DATE, dateStr + ' at ' + timeStr);
 
   statusEl.classList.remove('hidden');
@@ -594,7 +871,11 @@ App.emailRegionalResults = function() {
   body += 'Student: ' + r.studentName + '\n';
   body += 'Meet: ' + r.meetName + '\n';
   body += 'Date: ' + dateStr + ' at ' + timeStr + '\n';
-  body += 'Score: ' + r.score + '/' + total + ' (' + pct + '%)\n\n';
+  body += 'Part II Score: ' + r.score + '/' + total + ' (' + pct + '%)\n';
+  if (r.part1Results) {
+    body += 'Part I Score: ' + r.part1Score + '/30\n';
+  }
+  body += '\n';
 
   var mainResults = r.results.filter(function(res) { return res.section === 'main'; });
   var mainCorrect = mainResults.filter(function(res) { return res.correct; }).length;
@@ -607,6 +888,22 @@ App.emailRegionalResults = function() {
   }
 
   body += '\n--- DETAILED RESULTS ---\n\n';
+
+  if (r.part1Results) {
+    var proofR = r.part1Results.filter(function(res) { return res.type === 'proofreading'; });
+    var vocabR = r.part1Results.filter(function(res) { return res.type === 'vocabulary'; });
+
+    body += 'PART I: PROOFREADING (1-15)\n';
+    proofR.forEach(function(res) {
+      body += res.number + '. ' + (res.correct ? 'CORRECT' : 'WRONG') + ' | Answer: ' + res.correctAnswer + ' | Typed: ' + (res.answer || '(blank)') + '\n';
+    });
+
+    body += '\nPART I: VOCABULARY (16-30)\n';
+    vocabR.forEach(function(res) {
+      body += res.number + '. ' + (res.correct ? 'CORRECT' : 'WRONG') + ' | Answer: ' + res.correctAnswer + ' | Selected: ' + (res.answer || '(none)') + '\n';
+    });
+    body += '\n';
+  }
 
   body += 'PART II (Words 1-' + mainResults.length + ')\n';
   mainResults.forEach(function(res, i) {

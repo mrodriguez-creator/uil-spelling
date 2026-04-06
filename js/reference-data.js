@@ -587,6 +587,42 @@ const PRACTICE_TESTS = {
   },
   "meet5": {
     name: "Virtual Challenge Meet #5",
+    partI: {
+      proofreading: [
+        {words:["Louis Quatorz","sackcloth","impressionable","cutlery","vibraphone"], answer:"Louis Quatorze"},
+        {words:["lebensraum","exiguity","saiga","domesticity","sudoriphic"], answer:"sudorific"},
+        {words:["royalism","Erlenmeyer flask","variolate","Syrillic","Monet"], answer:"Cyrillic"},
+        {words:["caudate","volunteerism","Sphagnum","multi-lateral","board-certified"], answer:"multilateral"},
+        {words:["word processing","indeterminible","epidermis","velleity","newsmagazine"], answer:"indeterminable"},
+        {words:["splenomegaly","chorizo","Labrador retriever","pestilential","meletonin"], answer:"melatonin"},
+        {words:["mascarpon\u00e9","soup\u00e7on","cerebrate","poltroon","cathect"], answer:"mascarpone"},
+        {words:["Stonehenge","prospectus","capitulation","rotogravure","whitepaper"], answer:"white paper"},
+        {words:["succussion","altocumulous","ligulate","New Left","obfuscation"], answer:"altocumulus"},
+        {words:["eurocentric","ventilator","inadmissible","prix fixe","histology"], answer:"Eurocentric"},
+        {words:["mongrelize","afforestation","no-fault","auriferrous","Himalaya Mountains"], answer:"auriferous"},
+        {words:["peroral","channelize","Venazuela","ultramundane","replete"], answer:"Venezuela"},
+        {words:["sclerous","Pyungyang","untoward","zero hour","concussion"], answer:"Pyongyang"},
+        {words:["balaclava","Reconstruction","dystopean","noradrenergic","insidious"], answer:"dystopian"},
+        {words:["ide\u00e9 fixe","Ulysses","fortitudinous","chervil","pastina"], answer:"id\u00e9e fixe"}
+      ],
+      vocabulary: [
+        {q:"A mangrove is considered to be _____ because the seedlings emerge from the plant\u2019s fruit to descend into saltwater where the seedlings can then float away to take root any distance from the parent plant.",choices:["fissipalmate","ranula","gentian violet","viviparous","lotus position"],answer:"D"},
+        {q:"After observing the small masses and oozing sores on Kyle\u2019s foot, the doctor diagnosed the infection as _____.",choices:["hypnophobia","foramina","scotoma","yersiniosis","mycetoma"],answer:"E"},
+        {q:"We were strangely amused by the _____ outfits modeled in the designer fashion show and agreed that very few people would ever wear the bizarre ensembles.",choices:["flagitious","panacean","thrasonical","rumbustious","outr\u00e9"],answer:"E"},
+        {q:"The word phantasmagoria is derived from French roots based on _____.",choices:["illusion and allegory","lively and fierce","bell and flower","poem and song","plume and verve"],answer:"A"},
+        {q:"The queen was a symbol of _____ as shown in her devoted care and gracious compassion for the underprivileged of her kingdom.",choices:["polynya","benignancy","janissary","equerry","Agincourt"],answer:"B"},
+        {q:"Due to evidence of _____, the jurors were moved to give a lighter sentence because they felt the defendant only committed the crime to protect his family from threats made by a local gang member.",choices:["acquittance","cronyism","subornation","eminent domain","anamnesis"],answer:"C"},
+        {q:"When the platter of _____ was placed on the table, Shannon took one look at the sea snails and began to feel nauseous at the thought of eating one.",choices:["zwieback","manicotti","cruet","whelk","escarole"],answer:"D"},
+        {q:"_____ are also referred to as climbing irons.",choices:["Spangles","Crampons","Menhirs","Dulcimers","Calibrators"],answer:"B"},
+        {q:"After injecting a radioactive substance into the veins, the cardiologist was able to observe the _____ of the patient\u2019s circulatory system to verify that it was open and unblocked.",choices:["patency","pleuston","pisciculture","parataxis","prosopography"],answer:"A"},
+        {q:"The word _____ is derived from a Latin root meaning \u201ca murmuring.\u201d",choices:["prelapsarian","fremitus","echolocation","cacophonous","wraith"],answer:"B"},
+        {q:"_____ is the capital of Syria and one of the oldest continuously inhabited cities in the world.",choices:["Namibia","Quirinal","Ecuador","Damascus","Tophet"],answer:"D"},
+        {q:"Archaeologists delicately uncovered the _____ among the ruins, piecing together fragments of its ancient temple.",choices:["reliquiae","timbre","silage","monteith","leachate"],answer:"A"},
+        {q:"The speech relied on _____, contrasting freedom and oppression to emphasize the significance of liberty.",choices:["laureate","antithesis","heroic verse","watchword","palindrome"],answer:"B"},
+        {q:"The kinesiology undergraduate studied _____ to better understand the structure and function of the human body.",choices:["lycanthropy","exodontics","somatology","thaumatology","pomology"],answer:"C"},
+        {q:"Through _____, massive sections of the continent slowly rose and sank over millions of years without major folding or faulting.",choices:["epeirogeny","concrescence","radiolocation","lexicography","escarpment"],answer:"A"}
+      ]
+    },
     audio: {
       "words1-40": "audio/meet5-words-1-40.mp3",
       "words41-70": "audio/meet5-words-41-70.mp3",
