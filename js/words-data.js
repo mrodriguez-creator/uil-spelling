@@ -4578,5 +4578,22 @@ var DEFINITIONS = {
   "zootomy": "(noun) The dissection or anatomy of animals.",
   "zululand": "(noun) A historical region in northeastern South Africa, homeland of the Zulu people.",
   "zwieback": "a kind of bread",
-  "zygomatic bone": "(noun) The cheekbone."
+  "zygomatic bone": "(noun) The cheekbone.",
+  "myrmecophile": "a kind of organism which by habit shares the nest of an ant",
+  "cozenage": "deluding or hoodwinking; deception or trickery",
+  "entourage": "a group of people who serve as attendants; one's surroundings",
+  "convenable": "such that it can be summoned or called to meet or appear",
+  "mignonette": "a kind of plant",
+  "poignancy": "pathos; tenderness",
+  "unctuous": "glib or insincere; slippery; made up of or containing oil or fat; rich; soft",
+  "pityriasis": "a kind of skin disease",
+  "rendzina": "a kind of soil",
+  "deferment": "the act of putting off or postponing; an approved waiver of required military service",
+  "aiguillette": "a cord that is worn on a military uniform at the shoulder",
+  "geländesprung": "a kind of jump made in skiing",
+  "nauseant": "inducing vomiting",
+  "Vatican": "the residence of the pope; the papacy",
+  "tusche": "a black liquid which is used in lithography for drawing and is used in silk-screen work and etching as a resist",
+  "heinously": "in a very reprehensible manner",
+  "chaise longue": "a kind of seat"
 };
