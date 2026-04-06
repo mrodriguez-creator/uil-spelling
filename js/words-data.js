@@ -3005,7 +3005,26 @@ const AUDIO_MANIFEST = {
   "zootomy": "zootomy.mp3",
   "Zululand": "zululand.mp3",
   "zwieback": "zwieback.mp3",
-  "zygomatic bone": "zygomatic_bone.mp3"
+  "zygomatic bone": "zygomatic_bone.mp3",
+  "myrmecophile": "myrmecophile.mp3",
+  "cozenage": "cozenage.mp3",
+  "entourage": "entourage.mp3",
+  "convenable": "convenable.mp3",
+  "mignonette": "mignonette.mp3",
+  "poignancy": "poignancy.mp3",
+  "unctuous": "unctuous.mp3",
+  "pityriasis": "pityriasis.mp3",
+  "rendzina": "rendzina.mp3",
+  "deferment": "deferment.mp3",
+  "aiguillette": "aiguillette.mp3",
+  "geländesprung": "gelandesprung.mp3",
+  "nauseant": "nauseant.mp3",
+  "Tiki": "tiki.mp3",
+  "Vatican": "vatican.mp3",
+  "tusche": "tusche.mp3",
+  "heinously": "heinously.mp3",
+  "chaise longue": "chaise_longue.mp3",
+  "disembogue": "disembogue.mp3"
 };
 
 // Embedded definitions (1550 words)
