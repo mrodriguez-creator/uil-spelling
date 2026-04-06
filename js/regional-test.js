@@ -71,6 +71,18 @@ App.setupRegionalTest = function() {
   });
   document.getElementById('regionalReviewMissed').addEventListener('click', App.reviewRegionalMissed);
 
+  // Build accent helper for regional input
+  var accentContainer = document.getElementById('regionalAccentBtns');
+  if (accentContainer) {
+    accentContainer.innerHTML = App.buildAccentHelper('regionalInput');
+    accentContainer.querySelectorAll('.accent-btn').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        App.insertAccentChar('regionalInput', btn.dataset.char);
+      });
+    });
+  }
+
   // Populate meet selector with available meets that have word data
   var select = document.getElementById('regionalMeetSelect');
   select.innerHTML = '';
