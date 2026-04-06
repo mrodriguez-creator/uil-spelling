@@ -62,14 +62,10 @@ App.setupRegionalTest = function() {
     if (e.key === 'Enter') App.submitRegionalAnswer();
   });
   document.getElementById('regionalNext').addEventListener('click', App.nextRegionalWord);
-  document.getElementById('regionalDownloadPDF').addEventListener('click', App.downloadRegionalPDF);
-  document.getElementById('regionalSubmitGoogle').addEventListener('click', App.submitToGoogleForm);
-  document.getElementById('regionalEmailResults').addEventListener('click', App.emailRegionalResults);
   document.getElementById('restartRegional').addEventListener('click', function() {
     document.getElementById('regionalResults').classList.add('hidden');
     document.getElementById('audioModeSelector').classList.remove('hidden');
   });
-  document.getElementById('regionalReviewMissed').addEventListener('click', App.reviewRegionalMissed);
 
   // Build accent helper for regional input
   var accentContainer = document.getElementById('regionalAccentBtns');
@@ -334,8 +330,6 @@ App.submitPart1 = function() {
     listHtml += '<div class="result-item">' +
       '<span class="result-num">' + res.number + '.</span>' +
       '<span class="result-icon ' + (res.correct ? 'result-correct' : 'result-wrong') + '">' + (res.correct ? '\u2713' : '\u2717') + '</span>' +
-      '<span><strong>' + App.escapeHtml(res.correctAnswer) + '</strong></span>' +
-      (!res.correct ? '<span class="result-answer">You typed: ' + (res.answer || '(blank)') + '</span>' : '') +
       '</div>';
   });
 
@@ -344,8 +338,6 @@ App.submitPart1 = function() {
     listHtml += '<div class="result-item">' +
       '<span class="result-num">' + res.number + '.</span>' +
       '<span class="result-icon ' + (res.correct ? 'result-correct' : 'result-wrong') + '">' + (res.correct ? '\u2713' : '\u2717') + '</span>' +
-      '<span>Correct: <strong>' + res.correctAnswer + '</strong></span>' +
-      (!res.correct ? '<span class="result-answer">You chose: ' + (res.answer || '(none)') + '</span>' : '') +
       '</div>';
   });
 
@@ -457,8 +449,7 @@ App.submitRegionalAnswer = function() {
     App.recordAccuracy(w.word, true);
   } else {
     feedback.classList.add('incorrect');
-    feedback.innerHTML = '\u2717 Incorrect. The correct spelling is: <strong>' + App.escapeHtml(w.word) + '</strong>' +
-      (w.alt ? ' (also accepted: ' + App.escapeHtml(w.alt) + ')' : '');
+    feedback.textContent = '\u2717 Incorrect.';
     App.recordMiss(w.word, 'regional');
     App.recordAccuracy(w.word, false);
   }
@@ -526,9 +517,7 @@ App.showRegionalResults = function() {
     '<div class="regional-info-row"><strong>Meet:</strong> ' + App.escapeHtml(r.meetName) + '</div>' +
     '<div class="regional-info-row"><strong>Date:</strong> ' + dateStr + ' at ' + timeStr + '</div>';
 
-  // Show/hide missed review button
   var missed = r.results.filter(function(res) { return !res.correct; });
-  document.getElementById('regionalReviewMissed').style.display = missed.length > 0 ? '' : 'none';
 
   // Results list
   var list = document.getElementById('regionalResultsList');
@@ -542,8 +531,6 @@ App.showRegionalResults = function() {
       return '<div class="result-item">' +
         '<span class="result-num">' + res.number + '.</span>' +
         '<span class="result-icon ' + (res.correct ? 'result-correct' : 'result-wrong') + '">' + (res.correct ? '\u2713' : '\u2717') + '</span>' +
-        '<span><strong>' + App.escapeHtml(res.word) + '</strong>' + (res.outside ? ' <span class="outside-badge">*outside</span>' : '') + '</span>' +
-        (!res.correct ? '<span class="result-answer">You typed: ' + App.escapeHtml(res.answer) + '</span>' : '') +
         '</div>';
     }).join('');
   }
@@ -556,16 +543,14 @@ App.showRegionalResults = function() {
       return '<div class="result-item">' +
         '<span class="result-num">' + (res.number - r.mainWordCount) + '.</span>' +
         '<span class="result-icon ' + (res.correct ? 'result-correct' : 'result-wrong') + '">' + (res.correct ? '\u2713' : '\u2717') + '</span>' +
-        '<span><strong>' + App.escapeHtml(res.word) + '</strong>' + (res.outside ? ' <span class="outside-badge">*outside</span>' : '') + '</span>' +
-        (!res.correct ? '<span class="result-answer">You typed: ' + App.escapeHtml(res.answer) + '</span>' : '') +
         '</div>';
     }).join('');
   }
 
   list.innerHTML = html;
 
-  // Reset submit status
-  document.getElementById('regionalSubmitStatus').classList.add('hidden');
+  // Auto-submit scores to Google Form (teacher sees results in their spreadsheet)
+  App.submitToGoogleForm();
 };
 
 // ==================== PDF GENERATION ====================
